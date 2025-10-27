@@ -367,6 +367,9 @@ JADX_TIMEOUT = int(os.getenv('MOBSF_JADX_TIMEOUT', 1000))
 SAST_TIMEOUT = int(os.getenv('MOBSF_SAST_TIMEOUT', 1000))
 BINARY_ANALYSIS_TIMEOUT = int(os.getenv('MOBSF_BINARY_ANALYSIS_TIMEOUT', 600))
 DISABLE_AUTHENTICATION = os.getenv('MOBSF_DISABLE_AUTHENTICATION')
+# Comma separated list of public paths that should be accessible without login.
+# Example: '/,/recent_scans'
+PUBLIC_PATHS = [p for p in os.getenv('MOBSF_PUBLIC_PATHS', '/,/recent_scans').split(',') if p]
 RATELIMIT = os.getenv('MOBSF_RATELIMIT', '7/m')
 USE_X_FORWARDED_HOST = bool(
     os.getenv('MOBSF_USE_X_FORWARDED_HOST', '1') == '1')

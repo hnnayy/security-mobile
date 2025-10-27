@@ -1,4 +1,5 @@
 from django.urls import re_path
+from django.views.generic.base import RedirectView
 
 from mobsf.DynamicAnalyzer.views.common import device
 from mobsf.DynamicAnalyzer.views.common.frida import views as frida
@@ -181,7 +182,7 @@ urlpatterns = [
 if settings.API_ONLY == '0':
     urlpatterns.extend([
         # General
-        re_path(r'^$', home.index, name='home'),
+        re_path(r'^$', home.recent_scans, name='home'),
         re_path(r'^upload/$', home.Upload.as_view, name='upload'),
         re_path(r'^download/', home.download, name='download'),
         re_path(fr'^download_binary/{checksum_regex}/$',
