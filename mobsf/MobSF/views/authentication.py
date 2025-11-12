@@ -36,21 +36,6 @@ def login_required(func):
         if settings.DISABLE_AUTHENTICATION == '1' or api:
             # Disable authentication for all functions
             return func(request, *args, **kwargs)
-        # Allow anonymous access for specific public paths configured in
-        # settings.PUBLIC_PATHS (comma-separated env MOBSF_PUBLIC_PATHS).
-        try:
-            path = getattr(request, 'path', '') or ''
-            public_paths = getattr(settings, 'PUBLIC_PATHS', []) or []
-            # normalize and check prefixes so '/recent_scans' matches
-            for p in public_paths:
-                if not p:
-                    continue
-                # compare by prefix to allow '/recent_scans' and '/recent_scans/'
-                if path == p or path.startswith(p.rstrip('/') + '/') or path.rstrip('/') == p.rstrip('/'):
-                    return func(request, *args, **kwargs)
-        except Exception:
-            # If anything goes wrong reading the path or settings, fall back to normal behavior
-            pass
         # Force authentication for all
         # web function calls
         return lg(func)(request, *args, **kwargs)
