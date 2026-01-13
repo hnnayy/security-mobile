@@ -213,7 +213,8 @@ MIDDLEWARE = (
 ROOT_URLCONF = 'mobsf.MobSF.urls'
 WSGI_APPLICATION = 'mobsf.MobSF.wsgi.application'
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = os.getenv('TIME_ZONE', 'UTC')
+# Default to WIB (Asia/Jakarta) unless TIME_ZONE env var overrides it
+TIME_ZONE = os.getenv('TIME_ZONE', 'Asia/Jakarta')
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True

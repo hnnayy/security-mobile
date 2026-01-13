@@ -1,343 +1,491 @@
-
 {% extends "base/base_layout.html" %}
 {% load static %}
- {% block sidebar_option %}
+{% load tz %}
+{% block sidebar_option %}
       sidebar-collapse
 {% endblock %}
- {% block extra_css %}
+
+{% block extra_css %}
 <link href="{% static "adminlte/plugins/sweetalert2/sweetalert2.min.css" %}" rel="stylesheet">
 
 <style>
-#app_icon{
-        width: 64px;
-        height: 64px;
-    }
-.selected {
-    background-color: lightgreen !important;
+/* === GENERAL STYLING === */
+body {
+    background-color: #f8fafc;
+    font-family: "Segoe UI", sans-serif;
+}
+.content-wrapper {
+    background: #f9fbfd;
 }
 
-.selectable_table tr:hover {
-    background-color: lightgreen !important;
+/* === TABLE STYLING === */
+.table-container {
+    margin-top: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* === HEADER TABEL DENGAN RADIUS LENGKAP === */
+.table thead {
+    /* Match Static Report blue */
+    background-color: #1E3A5F;
+    color: white;
+    text-transform: uppercase;
+    font-size: 13px;
+    border: none !important;
+    position: relative;
+}
+
+.table thead th {
+    border: none !important;
+    vertical-align: middle;
+    text-align: center;
+    padding: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Sudut atas kiri dan kanan */
+.table thead tr:first-child th:first-child {
+    border-top-left-radius: 12px;
+}
+.table thead tr:first-child th:last-child {
+    border-top-right-radius: 12px;
+}
+
+/* Sudut bawah kiri dan kanan */
+.table thead::after {
+    /* Dinonaktifkan: using a responsive pseudo-element instead to cover
+       the small gap between the blue header and the first row. */
+    display: none;
+}
+
+/* Hilangkan semua garis tabel */
+.table {
+    border: none !important;
+    border-collapse: separate !important;
+    border-spacing: 0 10px;
+    background-color: transparent !important;
+}
+
+.table-responsive {
+        position: relative;
+}
+.table-responsive::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+       
+        top: 48px; /* posisi kira-kira di bawah header */
+        height: 12px; /* menutup celah putih */
+    /* Match Static Report blue */
+    background-color: #1E3A5F;
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
+        z-index: 1;
+        pointer-events: none;
+}
+
+/* Pastikan header selalu di atas pseudo-element, dan baris berada di bawah */
+.table thead th {
+        position: relative;
+        z-index: 2;
+}
+.table tbody td {
+        position: relative;
+        z-index: 0;
+}
+
+/* Isi tabel tanpa border */
+.table td {
+    border: none !important;
+    vertical-align: middle !important;
+    text-align: center;
+    background-color: #ffffff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    border-radius: 10px;
+    padding: 14px 8px;
+}
+
+/* Hover baris */
+.table-hover tbody tr:hover td {
+    background-color: #eaf3ff !important;
+    transition: 0.2s ease;
+}
+
+/* Hilangkan garis antar baris */
+.table tr {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+/* === APP COLUMN LAYOUT === */
+.app-cell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 15px;
+}
+
+.app-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.app-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.app-name {
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 3px;
+}
+
+.package-name {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 6px;
+}
+
+/* === BUTTON AREA === */
+.app-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Baris pertama: Scorecard */
+.top-row {
+    display: flex;
+}
+
+/* Baris kedua: Static + Dynamic sejajar */
+.bottom-row {
+    display: flex;
+    gap: 6px;
+}
+.bottom-row a {
+    flex: 1;
+    text-align: center;
+}
+
+/* === BUTTON STYLING === */
+.btn {
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    margin: 0;
+    text-align: center;
+    white-space: nowrap;     
+    display: inline-block; 
+}
+
+/* Scorecard */
+.btn-outline-primary {
+    border: 2px solid #1E3A5F;
+    color: #1E3A5F;
+    background: transparent;
+}
+.btn-outline-primary:hover {
+    background-color: #1E3A5F;
+    color: white;
+}
+
+/* Static Report */
+.btn-static {
+    background-color: #1E3A5F;
+    color: white;
+    font-weight: bold;
+    border: none;
+}
+.btn-static:hover {
+    background-color: #335e90;
+    color: white;
+}
+
+/* Dynamic Report */
+.btn-dynamic {
+    background-color: #1E3A5F;
+    color: white;
+    font-weight: bold;
+    border: none;
+}
+.btn-dynamic:hover {
+    background-color: #0d2239;
+    color: white;
+}
+
+/* === OTHER BUTTONS (PDF, etc) === */
+.btn-outline-info {
+    border-color: #17a2b8;
+    color: #17a2b8;
+}
+.btn-outline-info:hover {
+    background-color: #17a2b8;
+    color: white;
+}
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+/* Make delete button text/icon white for better contrast */
+.btn-danger, .btn-danger i {
+    color: white !important;
 }
 </style>
 {% endblock %}
+
 {% block content %}
 <div class="content-wrapper">
-  <div class="content-header">
-  </div>
+  <div class="content-header"></div>
    <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-            <div class="card">
+            <div class="table-container">
               <div class="card-body">
-                
 
-                 <div class="box">
-        <div class="box-header with-border">
-            <h3 class="box-title"><i class="fa fa-rocket"></i> Recent Scans</h3>
-            {% if async_scans %}
-            <p class="lead">View scan progress in the <strong><a href="{% url 'list_tasks' %}">Scan Queue</a></strong></p>
-            {% endif %}
-        </div>
-
-        <div class="box-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover table-striped">
+                <!-- Tabel -->
+                <div class="table-responsive">
+                <table class="table table-hover">
                     <thead>
-                    <tr>
-                        <th>APP</th>
-                        <th>FILE</th>
-                        <th>TYPE</th>
-                        <th>HASH</th>
-                        <th>SCAN DATE</th>
-                        <th style="width: 9%">ACTIONS</th>
-                    </tr>
+                        <tr>
+                            <th>APP</th>
+                            <th>FILE</th>
+                            <th>HASH</th>
+                            <th>SCAN DATE</th>
+                            <th>ACTION</th>
+                        </tr>
                     </thead>
                     <tbody>
                     {% for e in entries %}
                         <tr>
-                            <td style="text-align: center;">
-                                <img id="app_icon" src="{% if e.ICON_PATH %}/download/{{ e.ICON_PATH }}{% else %}{% static 'img/no_icon.png' %}{% endif %}">
-                                {% if e.PACKAGE_NAME or e.APP_NAME %}
-                                  <br/><strong>{{ e.APP_NAME }} {% if e.VERSION_NAME %} - {{ e.VERSION_NAME }} {% endif %}</strong>
-                                  </br>{{ e.PACKAGE_NAME }}
-                                  {% if e.FILE_NAME|slice:"-6:" != '.dylib' %}
-                                  {% if e.FILE_NAME|slice:"-5:" != '.appx' %}
-                                    {% if e.FILE_NAME|slice:"-3:" != '.so' %}
-                                      {% if e.FILE_NAME|slice:"-2:" != '.a' %}
-                                    <p> <a href="{% url "appsec_dashboard" checksum=e.MD5 %}" class="btn btn-sm btn-outline-primary" role="button"><i class="fas fa-user-shield"></i> MobSF Scorecard</a></p>
-                                      {% endif %}
-                                    {% endif %}
-                                    {% endif %}
-                                  {% endif %}
-                                  <p><a class="btn btn-primary btn-sm" href="../../../{{ e.ANALYZER }}/{{e.MD5}}/"><i class="fas fa-eye"></i> Static Report</a>
-                                  {% if '.apk' == e.FILE_NAME|slice:"-4:" or '.xapk' == e.FILE_NAME|slice:"-5:" or '.apks' == e.FILE_NAME|slice:"-5:" or '.aab' == e.FILE_NAME|slice:"-4:" %}
-                                    <a  class="btn btn-success btn-sm {% if not e.DYNAMIC_REPORT_EXISTS %}disabled{% endif %}" href="{% url "dynamic_report" checksum=e.MD5 %}"><i class="fa fa-mobile"></i> Dynamic Report</a>
-                                  {% elif '.ipa' == e.FILE_NAME|slice:"-4:" %}
-                                    {% if e.PACKAGE_NAME %}
-                                        <a  class="btn btn-success btn-sm {% if not e.DYNAMIC_REPORT_EXISTS %}disabled{% endif %}" href="{% url "ios_view_report" bundle_id=e.PACKAGE_NAME %}"><i class="fa fa-mobile"></i> Dynamic Report</a>
-                                    {% endif %}
-                                  {% endif %}
-                                  </p>
-                                {% else %}
-                                </br><span class="badge bg-warning">scan not completed</span>
-                                {% endif %}
+                            <td>
+                                <div class="app-cell">
+                                    <img class="app-icon" src="{% if e.ICON_PATH %}/download/{{ e.ICON_PATH }}{% else %}{% static 'img/no_icon.png' %}{% endif %}">
+                                    <div class="app-info">
+                                        <div class="app-name">{{ e.APP_NAME }} {% if e.VERSION_NAME %}- {{ e.VERSION_NAME }}{% endif %}</div>
+                                        <div class="package-name">{{ e.PACKAGE_NAME }}</div>
+                                        <div class="app-buttons">
+                                            <div class="top-row">
+                                                {% if e.FILE_NAME|slice:"-6:" != '.dylib' and e.FILE_NAME|slice:"-5:" != '.appx' and e.FILE_NAME|slice:"-3:" != '.so' and e.FILE_NAME|slice:"-2:" != '.a' %}
+                                                    <a href="{% url "appsec_dashboard" checksum=e.MD5 %}" class="btn btn-outline-primary btn-sm w-100">
+                                                        <i class="fas fa-shield-alt"></i> Scorecard
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="bottom-row">
+                                                <a class="btn btn-static btn-sm w-100" href="../../../{{ e.ANALYZER }}/{{e.MD5}}/">
+                                                    Static Report
+                                                </a>
+                                                {% if '.apk' == e.FILE_NAME|slice:"-4:" or '.xapk' == e.FILE_NAME|slice:"-5:" or '.apks' == e.FILE_NAME|slice:"-5:" or '.aab' == e.FILE_NAME|slice:"-4:" %}
+                                                    <a class="btn btn-dynamic btn-sm w-100 {% if not e.DYNAMIC_REPORT_EXISTS %}disabled{% endif %}" href="{% url "dynamic_report" checksum=e.MD5 %}">
+                                                        Dynamic Report
+                                                    </a>
+                                                {% elif '.ipa' == e.FILE_NAME|slice:"-4:" %}
+                                                    {% if e.PACKAGE_NAME %}
+                                                        <a class="btn btn-dynamic btn-sm w-100 {% if not e.DYNAMIC_REPORT_EXISTS %}disabled{% endif %}" href="{% url "ios_view_report" bundle_id=e.PACKAGE_NAME %}">
+                                                            Dynamic Report
+                                                        </a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
-                            <td>{{ e.FILE_NAME }}
-                            </td>
-                            <td style="text-align: center;">
-                                {% if '.apk' == e.FILE_NAME|slice:"-4:"%}<i class="fab fa-android fa-3x"></i>
-                                {% elif '.xapk' == e.FILE_NAME|slice:"-5:"%}<i class="fab fa-android fa-3x"></i>
-                                {% elif '.apks' == e.FILE_NAME|slice:"-5:"%}<i class="fab fa-android fa-3x"></i>
-                                {% elif '.aab' == e.FILE_NAME|slice:"-4:"%}<i class="fab fa-android fa-3x"></i>
-                                {% elif '.jar' == e.FILE_NAME|slice:"-4:"%}<i class="fab fa-java fa-3x"></i>
-                                {% elif '.aar' == e.FILE_NAME|slice:"-4:"%}<i class="fas fa-table fa-3x"></i>
-                                {% elif '.so' == e.FILE_NAME|slice:"-3:"%}<i class="fa fa-th-large fa-3x"></i>
-                                {% elif '.ipa' == e.FILE_NAME|slice:"-4:"%}<i class="fab fa-apple fa-3x"></i>
-                                {% elif '.dylib' == e.FILE_NAME|slice:"-6:"%}<i class="fa fa-th-large fa-3x"></i>
-                                {% elif '.a' == e.FILE_NAME|slice:"-2:"%}<i class="fa fa-th-large fa-3x"></i>
-                                {% elif '.zip' == e.FILE_NAME|slice:"-4:"%}<i class="fas fa-file-archive fa-3x"></i>
-                                {% elif '.appx' == e.FILE_NAME|slice:"-5:"%}<i class="fab fa-windows fa-3x"></i>
-                                {% endif %}
-                            </td>
+
+                            <td>{{ e.FILE_NAME }}</td>
                             <td>{{ e.MD5 }}</td>
-                            <td>{{ e.TIMESTAMP }}</td>
-                            <td><p>
-                                   <a class="btn btn-outline-primary btn-sm" href="{% url "pdf" checksum=e.MD5%}"><i class="fas fa-file-pdf"></i></a>
-                                   <a class="btn btn-outline-info btn-sm" href="../../../{{ e.ANALYZER }}/{{e.MD5}}/?rescan=1"><i class="fas fa-sync-alt"></i></a>
-                                   <a class="btn btn-outline-secondary btn-sm" href="{% url "download_binary" checksum=e.MD5%}"><i class="fas fa-download"></i></a>
-                                </p>
-                            {% if '.apk' == e.FILE_NAME|slice:"-4:" or '.xapk' == e.FILE_NAME|slice:"-5:" or '.apks' == e.FILE_NAME|slice:"-5:" or '.aab' == e.FILE_NAME|slice:"-4:"%}
-                                <p><a class="diffButton btn btn-warning btn-sm" id="{{ e.MD5 }}_{{ e.FILE_NAME }}"><i class="fas fa-not-equal"></i> Diff or Compare</a>
-                                </p>
-                            {% endif %}
-                            <p> <a class="btn btn-danger btn-sm" id="{{ e.MD5 }}" onclick="delete_scan(this)" href="#"><i class="fa fa-trash"></i> Delete Scan</a> </p>
+                            <td>{{ e.TIMESTAMP|localtime|date:"j F Y H:i" }}</td>
+                            <td>
+                                <a class="btn btn-outline-primary btn-sm" href="{% url "pdf" checksum=e.MD5%}" title="PDF Report"><i class="fas fa-file-pdf"></i></a>
+                                <a class="btn btn-outline-info btn-sm" href="../../../{{ e.ANALYZER }}/{{e.MD5}}/?rescan=1" title="Rescan"><i class="fas fa-sync-alt"></i></a>
+                                <a class="btn btn-outline-secondary btn-sm" href="{% url "download_binary" checksum=e.MD5%}" title="Download Binary"><i class="fas fa-download"></i></a>
+                                {% if '.apk' == e.FILE_NAME|slice:"-4:" or '.xapk' == e.FILE_NAME|slice:"-5:" or '.apks' == e.FILE_NAME|slice:"-5:" or '.aab' == e.FILE_NAME|slice:"-4:" %}
+                                    <a class="diffButton btn btn-warning btn-sm mt-1" id="{{ e.MD5 }}_{{ e.FILE_NAME }}" data-md5="{{ e.MD5 }}" data-filename="{{ e.FILE_NAME }}"><i class="fas fa-not-equal"></i> Diff / Compare</a>
+                                {% endif %}
+                                <a class="btn btn-danger btn-sm mt-1" id="{{ e.MD5 }}" onclick="delete_scan(this)"><i class="fa fa-trash"></i> Delete</a>
                             </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
+                </div>
+              </div>
             </div>
-            <!--pagination-->
-            <nav aria-label="Pagination">
-                <ul class="pagination justify-content-center">
-                  {% if page_obj.has_previous %}
-                  <li class="page-item">
-                    <a class="page-link" href="{% url 'scans_paginated' page_size=page_obj.page_size page_number=page_obj.previous_page_number %}">Previous</a>
-                  </li>   
-                  {% else %}
-                  <li class="page-item">
-                  <a class="page-link">Previous</a>
-                  </li>
-                  {% endif %}
-      
-                  {% for i in page_obj.paginator.page_range %}
-                  {% if page_obj.number == i %}
-                  <li class="page-item active">
-                      <a class="page-link" href="#">{{ i }} </a>
-                  </li>
-                  {% else %}
-                  <li class="page-item">
-                      <a class="page-link" href="{% url 'scans_paginated' page_size=page_obj.page_size page_number=i %}">{{ i }}</a>
-                  </li>
-                  {% endif %}
-                  {% endfor %}
-      
-                  {% if page_obj.has_next %}
-                  <li class="page-item">
-                    <a class="page-link" href="{% url 'scans_paginated' page_size=page_obj.page_size page_number=page_obj.next_page_number %}">Next</a>
-                   </li>
-                  {% else %}
-                  <li class="page-item">
-                    <a class="page-link">Next</a>
-                  </li>
-                  {% endif %}
-                  <li class="page-item">
-                    <div class="dropdown">
-                        <button class="page-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Items per page
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" href="{% url 'scans_paginated' page_size=5 page_number=page_obj.number %}">5</a>
-                          <a class="dropdown-item" href="{% url 'scans_paginated' page_size=10 page_number=page_obj.number %}">10</a>
-                          <a class="dropdown-item" href="{% url 'scans_paginated' page_size=20 page_number=page_obj.number %}">20</a>
-                          <a class="dropdown-item" href="{% url 'scans_paginated' page_size=50 page_number=page_obj.number %}">50</a>
-                          <a class="dropdown-item" href="{% url 'scans_paginated' page_size=100 page_number=page_obj.number %}">100</a>
-                          <a class="dropdown-item" href="{% url 'scans_paginated' page_size=250 page_number=page_obj.number %}">250</a>
-                        </div>
-                      </div>
-                </ul>
-              </nav>
-            <!--end pagination-->
-        </div>
-        <!-- /.box-body -->
-    </div>
-
-
           </div>
         </div>
-       </div>
      </div>
-    </div>
 </div>
 {% endblock %}
+
 {% block extra_scripts %}
 <script src="{% static "adminlte/plugins/sweetalert2/sweetalert2.min.js" %}"></script>
+{{ block.super }}
 <script>
+// Diff compare modal logic
+$(document).ready(function(){
+        // Build list of scans from table (md5 and filename)
+        function buildScanList(){
+                var scans = [];
+                $('table.table tbody tr').each(function(){
+                        var tds = $(this).find('td');
+                        if(tds.length >= 3){
+                                var file = $(tds[1]).text().trim();
+                                var md5 = $(tds[2]).text().trim();
+                                scans.push({md5: md5, file: file});
+                        }
+                });
+                return scans;
+        }
 
-    // Escape HTML
-    function escapeHtml(unsafe)
-    {
-        return unsafe
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
+        // Create modal HTML and append to body (only once)
+        if($('#diffModal').length === 0){
+                var modal = `
+                <div class="modal fade" id="diffModal" tabindex="-1" role="dialog" aria-labelledby="diffModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="diffModalLabel">Select App to Compare</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Please select the second scan result for comparison</p>
+                                <div class="form-group">
+                                    <label for="compareSelect">Available Scans</label>
+                                    <select class="form-control" id="compareSelect"></select>
+                                </div>
+                                <div id="diffAlert" class="text-muted small"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="startCompare">Compare</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                $('body').append(modal);
+        }
 
-    // Diff functions
-    var diff_first_md5 = '';
-    var diff_first_name = '';
+        var currentMd5 = null;
 
-    // When a row is clicked, we check if we already have first scan, if so, ask for confirmation
-    function enable_partner_select() {
-        $('table tr').on('click', function (e) {
-            e.preventDefault();
-            if (diff_first_md5 == '') {
-                return;
-            }
-            diff_confirmation($(this));
-        })
-    }
-
-
-    function enable_diff_button(){
-        $(".diffButton").on('click', function(e){
-            e.stopPropagation();
-            diff_select($(this));
+        // When Diff button clicked, populate modal select with other scans
+        $(document).on('click', '.diffButton', function(e){
+                e.preventDefault();
+                var scans = buildScanList();
+                currentMd5 = $(this).data('md5');
+                var $sel = $('#compareSelect');
+                $sel.empty();
+                var count = 0;
+                scans.forEach(function(s){
+                        if(s.md5 && s.md5 !== currentMd5){
+                                var text = s.file + ' — ' + s.md5;
+                                $sel.append($('<option>').val(s.md5).text(text));
+                                count++;
+                        }
+                });
+                if(count === 0){
+                        $('#diffAlert').text('No other scan results available to compare.');
+                        $('#startCompare').prop('disabled', true);
+                } else {
+                        $('#diffAlert').text('');
+                        $('#startCompare').prop('disabled', false);
+                }
+                $('#diffModal').modal('show');
         });
-    }
 
-    function disable_diff_button() {
-        $('.diffButton').off('click');
-    }
-
-    // First pop up only saves the first scan to diff and tells the user to select a partner
-    function diff_select(item) {
-
-        Swal.fire({
-            title: '<strong>Select App to Compare</strong>',
-            type: 'info',
-            text: 'Please select the second scan result for comparison',
-            timer: 10000
+        // Start compare
+        $(document).on('click', '#startCompare', function(){
+                var other = $('#compareSelect').val();
+                if(!other){
+                        $('#diffAlert').text('Please select a scan to compare.');
+                        return;
+                }
+                if(!currentMd5){
+                        $('#diffModal').modal('hide');
+                        return;
+                }
+                // Redirect to compare URL
+                var compareUrl = '/compare/' + encodeURIComponent(currentMd5) + '/' + encodeURIComponent(other) + '/';
+                window.location.href = compareUrl;
         });
-        diff_first_md5 = item.attr('id').slice(0, 32);
-        diff_first_name = item.attr('id').slice(33);
-        item.closest("tr").addClass("selected");
-        item.closest("tbody").addClass("selectable_table");
+});
+</script>
+<script>
+// CSRF token for AJAX calls
+const csrf = '{{ csrf_token }}';
 
-        // Enable the second partner selection
-        enable_partner_select();
-        disable_diff_button();
-    }
-
-    function diff_cleanup() {
-        first_td_id = diff_first_md5 + '_' + escapeHtml(diff_first_name);
-        $('[id="' + first_td_id + '"]').closest("tr").removeClass("selected");
-        $('[id="' + first_td_id + '"]').closest("tbody").removeClass("selectable_table");
-        diff_first_md5 = "";
-        diff_first_name = "";
-        enable_diff_button();
-    }
-
-    // Here we get jquery row
-    function diff_confirmation(item) {
-        // First we need the id which has the md5 and name
-        rows_tds = item.find('td');
-        selected_md5 = rows_tds[3].innerText;
-        if (diff_first_md5 == selected_md5) {
+function delete_scan(el){
+    try{
+        var md5 = $(el).attr('id');
+        if(!md5){
+            Swal.fire('Error','Invalid scan identifier','error');
             return;
         }
-        diff_second_md5 = selected_md5;
-        diff_second_name = rows_tds[1].innerText;
 
         Swal.fire({
-            title: '<strong>Diff confirmation</strong>',
-            type: 'info',
-            html:
-                '<strong>Do you want to diff - </strong><br />' + escapeHtml(diff_first_name) +
-                '<br /> <strong>with - <br /> </strong>' + escapeHtml(diff_second_name) + ' <br /> <strong>?</strong>',
-
+            title: 'Delete scan?',
+            text: 'This will permanently delete the scan and related files. Continue?',
+            icon: 'warning',
             showCancelButton: true,
-            cancelButtonText: 'Cancel',
-            confirmButtonText: 'Start Diffing!',
-        }).then((result) => {
-            if (result.value) {
-                window.location = '/compare/' + diff_first_md5 + '/' + diff_second_md5 + '/';
-            } else {
-                 diff_cleanup();
-            }
-        })
-    }
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Cancel'
+        }).then(function(result){
+            if(!result.value) return;
 
-    function delete_scan(item){
-      Swal.fire({
-      title: 'Are you sure?',
-      text: "This will permanently remove the scan results from MobSF",
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes',
-      cancelButtonText: 'No',
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#2da532',
-    }).then((result) => {
-        if (result.value) {
-            var md5_hash = item.id;
             $.ajax({
-                    url: '{% url "delete_scan" %}',
-                        type : 'POST',
-                    dataType: 'json',
-                        data : {
-                                csrfmiddlewaretoken: '{{ csrf_token }}',
-                                md5: md5_hash,
-                                },
-                            success : function(json) {
-                                if (json.deleted ==='yes'){
-                                    Swal.fire(
-                                        'Deleted!',
-                                        'The scan result is deleted!',
-                                        'success'
-                                    ).then(function () {
-                                        location.reload();
-                                    })
-                                }
-                                else {
-                                    Swal.fire(
-                                    'Delete Failed',
-                                    json.deleted,
-                                    'error'
-                                    )
-                                }
-                            },
-                            error : function(xhr,errmsg,err) {
-                                Swal.fire(
-                                    'Delete Failed',
-                                    errmsg,
-                                    'error'
-                                    )
-                            }
-                });
-               
-        } else {
-                diff_cleanup();
-        }
+                url: document.location.origin + "{% url 'delete_scan' %}",
+                type: 'POST',
+                dataType: 'json',
+                data: { md5: md5, csrfmiddlewaretoken: csrf },
+                success: function(resp){
+                    if(resp && (resp.deleted === 'yes' || resp.deleted === 'yes')){
+                        // Remove the corresponding table row
+                        $(el).closest('tr').remove();
+                        Swal.fire('Deleted','Scan removed','success');
+                    } else if(resp && resp.deleted){
+                        Swal.fire('Failed', resp.deleted, 'error');
+                    } else {
+                        Swal.fire('Failed','Failed to delete scan', 'error');
+                    }
+                },
+                error: function(xhr, status, err){
+                    if(xhr && xhr.status === 403){
+                        Swal.fire('Forbidden','You are not authorized to delete scans','error');
+                    } else {
+                        var txt = xhr && xhr.responseText ? xhr.responseText : err;
+                        Swal.fire('Error','Delete request failed: ' + txt, 'error');
+                    }
+                }
+            });
         });
+    } catch(e){
+        console.log(e);
+        Swal.fire('Error','An unexpected error occurred','error');
+    }
 }
-    
-
-enable_diff_button();
-
 </script>
-
 {% endblock %}

@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import platform
+import shutil
 
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -45,10 +46,25 @@ from mobsf.MobSF.views.authentication import (
 logger = logging.getLogger(__name__)
 try:
     import pdfkit
+    PDFKIT_AVAILABLE = True
 except ImportError:
+    PDFKIT_AVAILABLE = False
     logger.warning(
-        'wkhtmltopdf is not installed/configured properly.'
-        ' PDF Report Generation is disabled')
+        'pdfkit (python wrapper) not installed. wkhtmltopdf PDF Report '
+        'Generation is disabled')
+else:
+    # If pdfkit imported, try to locate wkhtmltopdf binary (can be overridden
+    # via settings.WKHTMLTOPDF_PATH or env MOBSF_WKHTMLTOPDF)
+    try:
+        from mobsf.MobSF import settings as _settings_for_wk
+        _wk_path = getattr(_settings_for_wk, 'WKHTMLTOPDF_PATH', '') or os.getenv('MOBSF_WKHTMLTOPDF', '')
+        if _wk_path:
+            # If a path is provided in settings/env, use it as-is (no validation here)
+            WKHTMLTOPDF_PATH = _wk_path
+        else:
+            WKHTMLTOPDF_PATH = shutil.which('wkhtmltopdf') or ''
+    except Exception:
+        WKHTMLTOPDF_PATH = shutil.which('wkhtmltopdf') or ''
 logger = logging.getLogger(__name__)
 ctype = 'application/json; charset=utf-8'
 
@@ -106,6 +122,20 @@ def pdf(request, checksum, api=False, jsonres=False):
         context['host_os'] = host_os
         context['timestamp'] = RecentScansDB.objects.get(
             MD5=checksum).TIMESTAMP
+        # If pdfkit or wkhtmltopdf binary is not available, return clear error
+        if not PDFKIT_AVAILABLE or not WKHTMLTOPDF_PATH:
+            err_msg = (
+                'wkhtmltopdf executable not found or pdfkit not installed. '
+                'Install wkhtmltopdf on the host (eg. `apt install wkhtmltopdf`), '
+                'or set path via settings.WKHTMLTOPDF_PATH or env MOBSF_WKHTMLTOPDF.'
+            )
+            logger.error('PDF generation skipped: %s', err_msg)
+            if api:
+                return {'error': 'Cannot Generate PDF', 'err_details': err_msg}
+            else:
+                err = {'pdf_error': 'Cannot Generate PDF', 'err_details': err_msg}
+                return HttpResponse(json.dumps(err), content_type=ctype, status=500)
+
         try:
             if api and jsonres:
                 return {'report_dat': context}
@@ -131,7 +161,14 @@ def pdf(request, checksum, api=False, jsonres=False):
                 if proxies['https']:
                     options['proxy'] = proxies['https']
                 html = template.render(context)
-                pdf_dat = pdfkit.from_string(html, False, options=options)
+                # configure pdfkit to use explicit wkhtmltopdf binary if provided
+                pdf_config = None
+                try:
+                    if WKHTMLTOPDF_PATH:
+                        pdf_config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_PATH)
+                except Exception:
+                    pdf_config = None
+                pdf_dat = pdfkit.from_string(html, False, options=options, configuration=pdf_config)
                 if api:
                     return {'pdf_dat': pdf_dat}
                 return HttpResponse(pdf_dat,
