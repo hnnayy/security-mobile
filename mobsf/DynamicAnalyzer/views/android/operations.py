@@ -248,7 +248,7 @@ def touch(request):
                     or not is_number(y)
                     or not is_number(max_x)
                     or not is_number(max_y)):
-                return data
+                return send_response(data)
             # Should not be greater than max screen size
             swipe_x = str(min(int(float(x)) + 500, int(float(max_x))))
             swipe_y = str(min(int(float(y)) + 500, int(float(max_y))))

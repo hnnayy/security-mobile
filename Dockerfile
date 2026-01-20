@@ -57,6 +57,7 @@ ARG TARGETPLATFORM
 
 # Install wkhtmltopdf, OpenJDK and jadx
 COPY scripts/dependencies.sh mobsf/MobSF/tools_download.py ./
+RUN chmod +x dependencies.sh && sed -i 's/\r$//' dependencies.sh
 RUN ./dependencies.sh
 
 # Install Python dependencies
@@ -81,6 +82,7 @@ RUN \
 # Copy source code
 WORKDIR /home/mobsf/Mobile-Security-Framework-MobSF
 COPY . .
+RUN chmod +x scripts/*.sh && sed -i 's/\r$//' scripts/*.sh
 
 HEALTHCHECK CMD curl --fail http://host.docker.internal:8000/ || exit 1
 
