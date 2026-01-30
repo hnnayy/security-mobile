@@ -43,7 +43,9 @@
 </head>
 <body class="hold-transition {% block sidebar_option %} {% endblock %} layout-fixed layout-navbar-fixed">
 <div class="wrapper">
-{% include "base/nav.html" %}    
+{% block show_nav %}
+  {% include "base/nav.html" %}
+{% endblock %}
  <!-- sidebar-->
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
