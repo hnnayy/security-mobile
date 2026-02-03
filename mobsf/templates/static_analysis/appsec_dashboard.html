@@ -5,16 +5,31 @@ sidebar-collapse
 {% endblock %}
 {% block extra_css %}
 <style>
-    @media print {
-      body { 
-        -webkit-print-color-adjust: exact; 
-      }
-    }
-    #mobsf{
-      width: 30px;
-      height: 30px;
-      background-color: #46494c;
-    }
+@media print {
+  section.content > .row.d-flex {
+    display: block !important;
+  }
+
+  /* Card tidak boleh kepotong */
+  .card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Section besar mulai halaman baru */
+  .score-card-react,
+  .risk-simple-card,
+  .privacy-safeguard-card,
+  #accordion .card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Kasih jarak aman antar halaman */
+  section.content {
+    padding-bottom: 24px;
+  }
+}
     #app_icon{
       width: 64px;
       height: 64px;
@@ -111,248 +126,1368 @@ sidebar-collapse
 // @Website: http://www.hachbe.be
 // @Version: 0.0.2 (2015-02-18)
 */
+
+/* ================================ */
+/* PRINT TITLE FIX */
+/* ================================ */
+
+.print-title {
+  display: none;
+}
+@media print {
+
+  {% with total=high|length|add:warning|length|add:info|length|add:secure|length %}
+
+  #bar-high {
+    width: {% widthratio high|length total 100 %}% !important;
+  }
+
+  #bar-warn {
+    width: {% widthratio warning|length total 100 %}% !important;
+  }
+
+  #bar-info {
+    width: {% widthratio info|length total 100 %}% !important;
+  }
+
+  #bar-secure {
+    width: {% widthratio secure|length total 100 %}% !important;
+  }
+
+  {% endwith %}
+
+  .severity-bar {
+    height: 10px !important;
+    background: #e5e7eb !important;
+  }
+
+  .severity-fill {
+    min-width: 8px;
+  }
+  .risk-simple-card .col-md-7 {
+    display: block !important;
+  }
+
+  .severity-item {
+    width: 100%;
+  }
+}
+
+
+@media print {
+
+  /* Tampilkan judul PDF */
+  .print-title {
+    display: block;
+    text-align: center;
+    margin-bottom: 28px;
+    page-break-after: avoid;
+  }
+
+  .print-title h1 {
+    font-size: 32px;
+    font-weight: 900;
+    margin: 0;
+    color: #0f172a;
+  }
+
+  .print-subtitle {
+    margin-top: 8px;
+    font-size: 14px;
+    letter-spacing: .12em;
+    color: #475569;
+  }
+
+  /* SEMBUNYIKAN HEADER LAYAR */
+  .security-header {
+    display: none !important;
+  }
+    /* === RISK PROFILE PDF FIX === */
+  .risk-simple-card .row.align-items-center {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .risk-simple-card .col-md-5 {
+    width: 40% !important;
+    max-width: 40% !important;
+  }
+
+  .risk-simple-card .col-md-7 {
+    width: 60% !important;
+    max-width: 60% !important;
+  }
+
+}
+
+
 </style>
+
+<style>
+/* ===== Security Header ===== */
+
+.security-header {
+  padding: 28px 0 18px;
+}
+
+.security-header-meta {
+  font-size: 14px;        
+  font-weight: 800;
+  letter-spacing: .22em; 
+  color: #2563eb;
+  margin-bottom: 8px;
+}
+
+
+.security-header-title {
+  font-size: 48px;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.security-header-sub {
+  font-size: 16px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.security-header-sub i {
+  color: #94a3b8;
+  font-size: 15px;
+}
+
+.header-divider {
+  color: #cbd5f5;
+}
+/* Icon kiri */
+.security-header-sub .fa-layer-group {
+  color: #6366f1;   
+}
+
+/* Icon Android  */
+.security-header-sub .fa-android {
+  color: #22c55e;   
+}
+
+/* Download button */
+.download-report-btn {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 18px;      
+  border-radius: 999px;
+  font-weight: 600;        
+  font-size: 14px;         
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.download-report-btn i {
+  font-size: 14px;
+}
+
+
+.download-report-btn:hover {
+  background: #020617;
+  color: #ffffff;
+}
+
+/*Security Score Card*/
+/* ===== React-style Security Score ===== */
+
+.score-card-react {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* Title */
+.score-title-react {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #94a3b8;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.score-dot {
+  width: 6px;
+  height: 6px;
+  background: #6366f1;
+  border-radius: 50%;
+}
+
+/* Ring wrapper */
+.score-ring-react {
+  position: relative;   
+  width: 220px;
+  height: 220px;
+  margin: auto;
+}
+
+/* SVG */
+.ring-svg {
+  position: absolute;
+  inset: 30px;
+}
+
+.ring-bg-react {
+  fill: none;
+  stroke: #f1f5f9;
+  stroke-width: 6;
+}
+
+.ring-progress-react {
+  fill: none;
+  stroke: url(#scoreGradient);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease;
+}
+
+/* Center text */
+.score-center-react {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.score-value {
+  font-size: 64px;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.score-value span {
+  font-size: 16px;
+  color: #6366f1;
+  margin-left: 2px;
+}
+
+/* Badge */
+.score-badge {
+  margin-top: 10px;
+  font-size: 11px;    
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  background: #f8fafc;
+  padding: 6px 12px;   
+  border-radius: 999px;
+}
+
+
+/* ===== Simple Risk Profile ===== */
+
+.risk-simple-card {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #eef2f7;
+}
+
+/* Header */
+.risk-simple-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.risk-simple-title {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .15em;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.risk-simple-level {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-top: 4px;
+}
+
+/* Badge */
+.risk-simple-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f59e0b;
+  background: #fff7ed;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+/* Grade Row */
+.risk-grade-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.risk-grade-box {
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 20px 0;
+  text-align: center;
+  color: #cbd5e1;
+  transition: all .3s ease;
+}
+
+.risk-grade-box .grade-letter {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.risk-grade-box small {
+  font-size: 9px;
+  letter-spacing: .15em;
+}
+
+/* Active grade */
+.risk-grade-box.active {
+  background: #fbbf24;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(251,191,36,.35);
+}
+
+/* ===== Privacy Safeguard Card ===== */
+
+.privacy-safeguard-card {
+  background: #ffffff;        
+  border-radius: 28px;
+  border: 1px solid #eef2f7;  
+}
+
+
+
+.privacy-safeguard-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  background: #e0e7ff;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 16px;
+}
+
+.privacy-safeguard-value {
+  font-size: 56px;   /* LEBIH BESAR */
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1;
+}
+
+
+.privacy-safeguard-sub {
+  font-size: 10px;
+  letter-spacing: .2em;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+/* Badge */
+.privacy-safeguard-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+
+/* Badge colors */
+.badge-green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.badge-yellow {
+  background: #fef9c3;
+  color: #ca8a04;
+}
+
+.badge-orange {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.badge-red {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.badge-gray {
+  background: #f1f5f9;
+  color: #64748b;
+}
+/* Make all top cards equal height */
+.row.d-flex > [class*="col-"] {
+  display: flex;
+}
+
+.row.d-flex > [class*="col-"] > .card {
+  width: 100%;
+  height: 100%;
+}
+
+/* === Unified Top Cards Shape === */
+.score-card-react,
+.risk-simple-card,
+.privacy-safeguard-card {
+  border-radius: 32px;                 /* lebih bulat */
+  border: 1px solid #eef2f7;
+  box-shadow:
+    0 20px 40px rgba(15, 23, 42, 0.06),
+    0 2px 6px rgba(15, 23, 42, 0.04);   /* soft layered shadow */
+}
+
+.score-card-react .card-body,
+.risk-simple-card .card-body,
+.privacy-safeguard-card .card-body {
+  padding: 32px 28px;
+}
+
+.score-badge,
+.risk-simple-badge,
+.privacy-safeguard-badge {
+  border-radius: 999px;
+}
+
+.risk-grade-box {
+  border-radius: 20px;
+}
+
+.privacy-safeguard-icon {
+  border-radius: 24px;
+}
+
+/* === Security Score Knob Styling === */
+.dial {
+  font-weight: 900 !important;
+  font-size: 48px !important;
+  color: #0f172a !important;
+}
+
+.security-score-label {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.score-status {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.ring-svg circle {
+  transition: stroke-dasharray 0.8s ease;
+}
+
+/* === Severity Distribution (Rounded Bar) === */
+.severity-item {
+  margin-bottom: 22px;
+}
+
+.severity-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 800;
+  letter-spacing: .12em;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.severity-label .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.severity-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+}
+
+.severity-bar {
+  width: 100%;
+  height: 14px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.severity-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+/* kecilkan padding card */
+.risk-simple-card .card-body {
+  padding: 22px 20px;
+}
+
+/* kecilkan judul utama */
+.risk-simple-card .score-title-react {
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+/* sub header: RISK RATING / SEVERITY DISTRIBUTION */
+.risk-simple-card hr {
+  margin-top: 6px;
+  margin-bottom: 10px;
+}
+
+/* GRADE label */
+.risk-simple-card .col-md-5 > div:first-child {
+  font-size: 12px !important;
+}
+
+/* huruf grade (A/B/C/F) */
+.risk-simple-card .col-md-5 div[style*="font-size:120px"] {
+  font-size: 90px !important;
+}
+
+/* teks LOW / MEDIUM / HIGH RISK */
+.risk-simple-card .col-md-5 div[style*="letter-spacing:.35em"] {
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* jarak antar severity item */
+.severity-item {
+  margin-bottom: 14px;
+}
+
+/* label severity */
+.severity-label {
+  font-size: 12px;
+}
+
+/* bar severity lebih tipis */
+.severity-bar {
+  height: 10px;
+}
+
+/* angka jumlah severity */
+.severity-label strong {
+  font-size: 12px;
+}
+/* ============================= */
+/* BOLD RISK PROFILE ANALYSIS */
+/* ============================= */
+
+/* Judul card */
+.risk-simple-card .score-title-react {
+  font-weight: 900 !important;
+  color: #0f172a;
+  letter-spacing: 0.25em;
+}
+
+/* Sub header: RISK RATING & SEVERITY DISTRIBUTION */
+.risk-simple-card .row.mb-2 > div > div {
+  font-weight: 900 !important;
+  color: #475569;
+}
+
+/* GRADE label */
+.risk-simple-card .col-md-5 > div:first-child {
+  font-weight: 900 !important;
+  color: #64748b;
+}
+
+/* Huruf Grade (A / B / C / F) */
+.risk-simple-card .col-md-5 div[style*="font-size:120px"] {
+  font-weight: 900 !important;
+  color: #020617;
+}
+
+/* Risk text (LOW / MEDIUM / HIGH / CRITICAL) */
+.risk-simple-card .col-md-5 div[style*="letter-spacing:.35em"] {
+  font-weight: 900 !important;
+}
+
+/* Severity label (HIGH / MEDIUM / LOW / SECURE) */
+.severity-label {
+  font-weight: 900 !important;
+  color: #334155;
+}
+
+/* Angka severity */
+.severity-label strong {
+  font-weight: 900;
+  color: #020617;
+}
+
+/* Bar lebih kontras */
+.severity-bar {
+  background: #e5e7eb;
+}
+
+.severity-fill {
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+}
+
+/* === Unified Purple Security Score === */
+:root {
+  --score-purple: #6366f1;
+}
+
+/* Judul SECURITY SCORE */
+.score-card-react .score-title-react {
+  color: var(--score-purple) !important;
+}
+
+/* Ikon security */
+.score-card-react .score-icon {
+  color: var(--score-purple) !important;
+}
+
+.risk-profile-title {
+  color: var(--score-purple) !important;
+}
+
+.risk-profile-title .score-icon {
+  color: var(--score-purple) !important;
+}
+/* === Samakan ukuran Risk Profile dengan Security Score === */
+.risk-simple-card .score-title-react.risk-profile-title {
+  font-size: 14px !important;
+  letter-spacing: 0.2em !important;
+}
+/* === Privacy Risk Title (Samakan dengan Security Score) === */
+.privacy-risk-title {
+  justify-content: flex-start !important; 
+  color: var(--score-purple) !important;  
+  font-size: 14px !important;
+  letter-spacing: 0.2em !important;
+  margin-bottom: 18px;
+}
+
+.privacy-risk-title .score-icon {
+  color: var(--score-purple) !important;
+}
+.privacy-icon-soft {
+  width: 110px;              
+  height: 110px;
+  border-radius: 28px;
+  background: #eef2ff;
+  color: var(--score-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 46px;          
+  margin: 20px auto 24px;
+}
+.privacy-icon-soft i {
+  color: var(--score-purple) !important;
+}
+/* === FIX SIZE Security Analysis Findings === */
+.security-analysis-header {
+  margin-bottom: 16px;    
+}
+
+.security-analysis-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 26px;         
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.security-analysis-title i {
+  font-size: 22px;         
+  color: #6366f1;
+}
+
+.security-analysis-subtitle {
+  margin-top: 4px;
+  font-size: 14px;         
+  color: #64748b;
+}
+
+/* === Give space between header text and card border === */
+.card > .security-analysis-header {
+  padding: 16px 24px 18px;  
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* === Findings Pill Summary === */
+.findings-pill-row {
+  margin-bottom: 24px;
+}
+
+.findings-pill-row .col {
+  padding: 0 10px;
+}
+
+.finding-pill {
+  position: relative;
+  height: 105px;
+  border-radius: 22px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 2px solid transparent;
+  box-shadow: 0 10px 24px rgba(15,23,42,.08);
+}
+
+/* Icon */
+.pill-icon {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
+/* Label */
+.pill-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .22em;
+  color: #475569;
+}
+
+/* Count */
+.pill-count {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 34px;
+  font-weight: 900;
+}
+
+/* === Color Themes === */
+.finding-pill.danger {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.finding-pill.warning {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #d97706;
+}
+
+.finding-pill.info {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+}
+
+.finding-pill.success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #16a34a;
+}
+
+.finding-pill.gray {
+  background: #f8fafc;
+  border-color: #e5e7eb;
+  color: #64748b;
+}
+/* ============================= */
+/* MODERN FINDINGS (NO HARDCODE) */
+/* ============================= */
+
+/* Card utama */
+#accordion .card.card-outline {
+  border-radius: 20px;
+  border: 1px solid #eef2f7 !important;
+  box-shadow: 0 8px 24px rgba(15,23,42,.06);
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+/* Header clickable */
+#accordion .card > a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Sameline jadi horizontal modern */
+#accordion .sameline {
+  align-items: center;
+  padding: 22px 26px;
+}
+
+/* Hilangkan header AdminLTE lama */
+#accordion .card-header {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Judul */
+#accordion .card-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Badge severity (pakai class ASLI bg-danger, dll) */
+#accordion .badge {
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+/* Section label kanan (CERTIFICATE / MANIFEST / dll) */
+#accordion .sameline > label {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  white-space: nowrap;
+}
+
+/* Collapse body */
+#accordion .collapse .card-body {
+  border-top: 1px solid #eef2f7;
+  padding: 18px 26px 26px;
+}
+
+/* Hover effect */
+#accordion .card > a:hover {
+  background: #f8fafc;
+}
+
+/* Chevron indicator (pure CSS, no hardcode HTML) */
+#accordion .card > a::after {
+  content: "\f078";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  right: 28px;
+  color: #94a3b8;
+  transition: transform .3s ease;
+}
+
+#accordion .card > a[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+#accordion pre {
+  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #1f2937;          
+  background: transparent; 
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ================================ */
+/* HEADER ALIGNMENT & SPACING FIX */
+/* ================================ */
+
+/* Container header */
+.security-header {
+  padding-left: 20px;   /* ⬅️ kasih jarak dari sisi kiri */
+  padding-right: 20px;
+}
+
+/* SECURITY ANALYSIS (teks kecil biru) */
+.security-header-meta {
+  font-size: 15px;      /* diperbesar dikit */
+  letter-spacing: .28em;
+  margin-bottom: 10px;
+}
+
+/* Security Scorecard (judul utama) */
+.security-header-title {
+  font-size: 48px;      /* ⬅️ LEBIH BESAR */
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+/* Baris app name + OS */
+.security-header-sub {
+  font-size: 18px;      /* ⬅️ diperbesar */
+  gap: 14px;
+}
+/* Default */
+.print-only {
+  display: none;
+}
+
+/* PRINT MODE */
+@media print {
+
+  /* Header web disembunyikan */
+  .security-header:not(.print-only) {
+    display: none !important;
+  }
+
+  /* Header PDF ditampilkan */
+  .print-only {
+    display: block !important;
+    margin-bottom: 32px;
+  }
+
+  /* Centering biar rapi di PDF */
+  .print-only .security-header-sub {
+    justify-content: center;
+  }
+}
+@media print {
+
+  /* Paksa semua accordion terbuka */
+  #accordion .collapse {
+    display: block !important;
+    height: auto !important;
+    visibility: visible !important;
+  }
+
+  /* Hilangkan animasi bootstrap */
+  #accordion .collapsing {
+    display: block !important;
+    height: auto !important;
+  }
+
+}
+
+
+</style>
+
+
 <link rel="stylesheet" href="{% static "others/css/spinner.css" %}">
 {% endblock %}
 {% block content %}
     <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-12">
-            <div class="sameline">
-           <h1><img src="{% static "img/mobsf_icon.png" %}" id="mobsf" alt="MobSF"> MobSF Application Security Scorecard
-           <img id="app_icon" src="/download/{{ hash }}-icon.png" onerror="this.src='{% static 'img/no_icon.png' %}'"/>
-           - {% if app_name %}  {{ app_name }}  {% else %} {{ file_name }} {% endif %} {{ version_name }}
-        
-            {% if '.apk' == file_name|slice:"-4:"%}<i class="fab fa-android"></i>
-            {% elif '.xapk' == file_name|slice:"-5:"%}<i class="fab fa-android"></i>
-            {% elif '.apks' == file_name|slice:"-5:"%}<i class="fab fa-android"></i>
-            {% elif '.ipa' == file_name|slice:"-4:"%}<i class="fab fa-apple"></i>
-            {% elif '.zip' == file_name|slice:"-4:"%}<i class="fas fa-file-archive"></i>
-            {% elif '.appx' == file_name|slice:"-5:"%}<i class="fab fa-windows"></i>
+  <section class="content-header security-header">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+
+        <!-- LEFT -->
+        <div class="col-md-8">
+          <div class="security-header-meta">
+            SECURITY ANALYSIS
+          </div>
+
+          <h1 class="security-header-title">
+            Security Scorecard
+          </h1>
+
+          <div class="security-header-sub">
+            <i class="fas fa-layer-group"></i>
+            <span>
+              {% if app_name %}{{ app_name }}{% else %}{{ file_name }}{% endif %}
+              {{ version_name }}
+            </span>
+            <span class="header-divider">|</span>
+            <i class="fab fa-android"></i>
+            {% if '.apk' == file_name|slice:"-4:" or '.xapk' == file_name|slice:"-5:" or '.apks' == file_name|slice:"-5:" %}
+              Android OS
+            {% elif '.ipa' == file_name|slice:"-4:" %}
+              iOS
+            {% elif '.appx' == file_name|slice:"-5:" %}
+              Windows
+            {% else %}
+              Unknown OS
             {% endif %}
-        </h1>
-        <label class="text-right">  <a class="btn btn-outline-primary" onclick="window.print()"><i class="fas fa-file-pdf"></i></a> </label>
-      </div>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
-    </section>
+        <!-- RIGHT -->
+        <div class="col-md-4 text-right">
+          <button class="btn download-report-btn" onclick="window.print()">
+            <i class="fas fa-file-download"></i>
+            Export PDF
+          </button>
+        </div>
+      </div>
+    </div>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
+  </section>
 
-            <div class="col-lg-3">
-              {% if not efr01 %}
-                <div class="card">
-                    <div class="card-header ui-sortable-handle" >
-                      <h3 class="card-title">
-                        <i class="fas fa-star-half-alt"></i> Security Score
-                      </h3>
-                    </div><!-- /.card-header -->
-                    <div class="card-body">
-                      <div align="center"class="tab-content p-0">
-                        <p>
-                        <input type="text" value="{{ security_score }}" class="dial" data-fgColor="
-                        {% if security_score < 30 %}
-                        #ff0018
-                        {% elif security_score < 40 %}
-                        #ffc107
-                        {% elif security_score < 60 %}
-                        #17a2b8
-                        {% else %}
-                        #28a745
-                        {% endif %}
-                        ">
-                        </br>
-                   <h5>Security Score {{ security_score }}/100</h5></p>
-                      </div>
-                    </div><!-- /.card-body -->
-                  </div>
-                  {% endif %}
-            </div>
+<!-- ================= PRINT HEADER (PDF ONLY) ================= -->
+<section class="content-header security-header print-only">
+  <div class="container-fluid">
+    <div class="row align-items-center">
+      <div class="col-12 text-center">
 
-            <div class="col-lg-3">
-                <div class="card">
-                    <div class="card-header ui-sortable-handle" >
-                      <h3 class="card-title">
-                        <i class="fas fa-tachometer-alt"></i> Risk Rating
-                      </h3>
-                    </div><!-- /.card-header -->
-                    <div class="card-body">
-                      <div align="center" class="tab-content p-0">
-                        <p>
-                          <canvas id="risk"></canvas>
-                        </br>
-                        <p><h5>Grade</h5></p>
-                        <ol class="risk-level">
-                          {% if security_score < 30 %}
-                          <li>A</li>
-                          <li>B</li>
-                          <li>C</li>
-                          <li class="isActive">F</li>
-                          {% elif security_score < 40 %}
-                          <li>A</li>
-                          <li>B</li>
-                          <li class="isActive">C</li>
-                          <li>F</li>
-                          {% elif security_score < 60 %}
-                          <li>A</li>
-                          <li class="isActive">B</li>
-                          <li>C</li>
-                          <li>F</li>
-                          {% else %}
-                          <li class="isActive">A</li>
-                          <li>B</li>
-                          <li>C</li>
-                          <li>F</li>
-                          {% endif %}
-                        </ol>
-                        </h5>
-                        </p>
-                      </div>
-                    </div><!-- /.card-body -->
-                  </div>
-            </div>
-
-            <div class="col-lg-3">
-                <div class="card">
-                    <div class="card-header ui-sortable-handle" >
-                      <h3 class="card-title">
-                        <i class="fas fa-chart-pie mr-1"></i>
-                        Severity Distribution (%)
-                      </h3>
-                    </div><!-- /.card-header -->
-                    <div class="card-body">
-                      <div align="center" class="tab-content p-0">
-                        <canvas width="100%" height="100%" id="severity"></canvas>
-                      </br>
-                      </div>
-                    </div><!-- /.card-body -->
-                  </div>
-            </div>
-
-            <div class="col-lg-3">
-              {% if not efr01 %}
-                <div class="card">
-                    <div class="card-header ui-sortable-handle" >
-                      <h3 class="card-title">
-                        <i class="fas fa-user-secret"></i>
-                        Privacy Risk
-                      </h3>
-                    </div><!-- /.card-header -->
-                    <div class="card-body">
-                      <div align="center" class="tab-content p-0">
-                        <p>
-                        <span class="privacy" style="{% if total_trackers %}
-                            {% if trackers == 0 %}
-                              background:#39850d">
-                            {% elif trackers > 4 %}
-                              background:#ff0018">
-                            {% else %}
-                              background:#303238">
-                            {% endif %}
-                            {{ trackers }} {% else %}"> NA {% endif %}</span>
-                        </br>
-                        <h5>{% if total_trackers %} User/Device Trackers {% else %} Not Scanned {% endif %}</h5></p>
-                      </div>
-                    </div><!-- /.card-body -->
-                  </div>
-                  {% endif %}
-            </div>
-
+        <div class="security-header-meta">
+          SECURITY ANALYSIS
         </div>
 
+        <h1 class="security-header-title">
+          Security Scorecard
+        </h1>
+
+        <div class="security-header-sub justify-content-center">
+          <i class="fas fa-layer-group"></i>
+          <span>
+            {% if app_name %}{{ app_name }}{% else %}{{ file_name }}{% endif %}
+            {{ version_name }}
+          </span>
+          <span class="header-divider">|</span>
+          <i class="fab fa-android"></i>
+          {% if '.apk' == file_name|slice:"-4:" or '.xapk' == file_name|slice:"-5:" %}
+            Android OS
+          {% elif '.ipa' == file_name|slice:"-4:" %}
+            iOS
+          {% else %}
+            Unknown OS
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row d-flex align-items-stretch">
+
+          <!-- Security Score -->
+            <div class="col-lg-3">
+              {% if not efr01 %}
+              <div class="card score-card-react text-center">
+                <div class="card-body">
+
+                  <!-- Title -->
+                  <h3 class="score-title-react">
+                    <i class="fas fa-shield-alt score-icon"></i>
+                    SECURITY SCORE
+                  </h3>
+
+                  <!-- Ring -->
+                  <div class="score-ring-react">
+                   
+                    <!-- SVG Progress -->
+                    <svg viewBox="0 0 160 160" class="ring-svg">
+
+                      <!-- background full circle -->
+                      <circle
+                        cx="80" cy="80" r="70"
+                        fill="none"
+                        stroke="#eef2f7"
+                        stroke-width="14"
+                        pathLength="100"
+                        stroke-dasharray="100"
+                      />
+
+                      <!-- progress full circle -->
+                      <circle
+                      cx="80" cy="80" r="70"
+                      fill="none"
+                      stroke="#6366f1"
+                      stroke-width="14"
+                      stroke-linecap="round"
+                      pathLength="100"
+                      stroke-dasharray="{{ security_score }} 100"
+                      transform="rotate(-90 80 80)"
+                    />
+
+                    </svg>
+
+                    <div class="score-center-react">
+                      <div class="score-value">
+                        {{ security_score }}
+                      </div>
+                      <div class="score-max">
+                        /100
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              </div>
+
+            <!-- Risk Profile Analysis -->
+            <div class="col-lg-6">
+              <div class="card risk-simple-card">
+                <div class="card-body">
+
+                  <!-- Card Title -->
+                  <h3 class="score-title-react risk-profile-title">
+                    <i class="fas fa-chart-line score-icon"></i>
+                    RISK PROFILE ANALYSIS
+                  </h3>
+
+                  <!-- Sub Section Headers -->
+                  <div class="row mb-2">
+                    <div class="col-md-5">
+                      <div style="
+                        font-size:13px;
+                        font-weight:900;
+                        letter-spacing:.3em;
+                        color:#94a3b8;
+                        text-transform:uppercase;
+                        margin-bottom:10px;
+                      ">
+                        RISK RATING
+                      </div>
+                      <hr style="border-top:1px solid #eef2f7;">
+                    </div>
+
+                    <div class="col-md-7">
+                      <div style="
+                        font-size:13px;
+                        font-weight:900;
+                        letter-spacing:.3em;
+                        color:#94a3b8;
+                        text-transform:uppercase;
+                        margin-bottom:10px;
+                      ">
+                        SEVERITY DISTRIBUTION
+                      </div>
+                      <hr style="border-top:1px solid #eef2f7;">
+                    </div>
+                  </div>
+
+                  <!-- Content -->
+                  <div class="row align-items-center">
+
+                    <!-- LEFT : RISK RATING / GRADE -->
+                    <div class="col-md-5 text-center">
+
+                      <div style="font-size:14px; letter-spacing:.25em; color:#94a3b8;">
+                        GRADE
+                      </div>
+
+                      <div style="font-size:120px; font-weight:900; color:#0f172a; line-height:1;">
+                        {% if security_score < 30 %}
+                          F
+                        {% elif security_score < 40 %}
+                          C
+                        {% elif security_score < 60 %}
+                          B
+                        {% else %}
+                          A
+                        {% endif %}
+                      </div>
+
+                      <div style="margin-top:10px; font-weight:900; letter-spacing:.35em;
+                        {% if security_score < 30 %}color:#dc2626;
+                        {% elif security_score < 40 %}color:#f59e0b;
+                        {% elif security_score < 60 %}color:#f59e0b;
+                        {% else %}color:#16a34a;
+                        {% endif %}">
+                        {% if security_score < 30 %}
+                          CRITICAL RISK
+                        {% elif security_score < 40 %}
+                          HIGH RISK
+                        {% elif security_score < 60 %}
+                          MEDIUM RISK
+                        {% else %}
+                          LOW RISK
+                        {% endif %}
+                      </div>
+
+                    </div>
+
+                    <!-- RIGHT : SEVERITY DISTRIBUTION -->
+                    <div class="col-md-7">
+                                <!-- HIGH -->
+                      <div class="severity-item">
+                        <div class="severity-label">
+                          <span>HIGH</span>
+                          <strong>{{ high|length }}</strong>
+                        </div>
+                        
+                        <div class="severity-bar">
+                          <div id="bar-high" class="severity-fill" style="background:#ef4444;"></div>
+                        </div>
+                      </div>
+
+                      <!-- MEDIUM -->
+                      <div class="severity-item">
+                        <div class="severity-label">
+                          <span>MEDIUM</span>
+                          <strong>{{ warning|length }}</strong>
+                        </div>
+                        <div class="severity-bar">
+                          <div id="bar-warn" class="severity-fill" style="background:#f59e0b;"></div>
+                        </div>
+                      </div>
+
+                      <!-- INFO -->
+                      <div class="severity-item">
+                        <div class="severity-label">
+                          <span>LOW / INFO</span>
+                          <strong>{{ info|length }}</strong>
+                        </div>
+                        <div class="severity-bar">
+                          <div id="bar-info" class="severity-fill" style="background:#3b82f6;"></div>
+                        </div>
+                      </div>
+
+                      <!-- SECURE -->
+                      <div class="severity-item">
+                        <div class="severity-label">
+                          <span>SECURE</span>
+                          <strong>{{ secure|length }}</strong>
+                        </div>
+                        <div class="severity-bar">
+                          <div id="bar-secure" class="severity-fill" style="background:#22c55e;"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- Privacy Riks/Trackers -->
+            <div class="col-lg-3">
+              {% if not efr01 %}
+              <div class="card privacy-safeguard-card">
+                <div class="card-body text-center">
+
+                  <!-- Title -->
+                  <h3 class="score-title-react privacy-risk-title">
+                    <i class="fas fa-user-shield score-icon"></i>
+                    PRIVACY RISK
+                  </h3>
+
+                  <div class="privacy-icon-soft">
+                    <i class="fas fa-user-secret"></i>
+                  </div>
+
+                  <!-- Value -->
+                  <div class="privacy-safeguard-value">
+                    {{ trackers|default:"0" }}
+                  </div>
+
+                  <div class="privacy-safeguard-sub">
+                    TRACKERS DETECTED
+                  </div>
+
+                  <!-- Status Badge -->
+                  <div class="privacy-safeguard-badge
+                    {% if not total_trackers %}badge-gray
+                    {% elif trackers == 0 %}badge-green
+                    {% elif trackers <= 2 %}badge-yellow
+                    {% elif trackers <= 4 %}badge-orange
+                    {% else %}badge-red{% endif %}">
+
+                    {% if not total_trackers %}
+                      NOT SCANNED
+                    {% elif trackers == 0 %}
+                      IDENTITY SAFE
+                    {% elif trackers <= 2 %}
+                      LOW PRIVACY RISK
+                    {% elif trackers <= 4 %}
+                      MEDIUM PRIVACY RISK
+                    {% else %}
+                      HIGH PRIVACY RISK
+                    {% endif %}
+                  </div>
+
+                </div>
+              </div>
+              {% endif %}
+            </div>
+        </div>
+
+        <!-- Findings Section -->
     </br>
-
-    
-
         <div class="row">
             <div class="col-12" id="accordion">
 
                 <div class="col-lg-12">
                     <div class="card">
-                        <div class="card-header ui-sortable-handle" >
-                          <h3 class="card-title">
-                            <i class="fas fa-file-alt"></i> Findings
-                          </h3>
-                        </div><!-- /.card-header -->
+                        <div class="security-analysis-header">
+                          <div class="security-analysis-title">
+                            <i class="fas fa-shield-alt"></i>
+                            Security Analysis Findings
+                          </div>
+
+                          <div class="security-analysis-subtitle">
+                            Laporan kerentanan keamanan aplikasi Android
+                          </div>
+                        </div>
+                        <!-- /.card-header -->
                         <div class="card-body">
                             <!--boxes-->
-                            <div class="row">
-                                <!-- /.col -->
-                                <div class="col-md-3 col-sm-6 col-12">
-                                    <div class="info-box">
-                                      <span class="info-box-icon bg-danger"><i class="fas fa-bug"></i></span>
-                        
-                                      <div class="info-box-content">
-                                        <span class="info-box-text">High</span>
-                                        <span class="info-box-number">{{ high | length}}</span>
-                                      </div>
-                                      <!-- /.info-box-content -->
-                                    </div>
-                                    <!-- /.info-box -->
-                                  </div>
-                                  <!-- /.col -->
-                                  <div class="col-md-3 col-sm-6 col-12">
-                                    <div class="info-box">
-                                      <span class="info-box-icon bg-warning"><i class="fas fa-exclamation-triangle"></i></span>
-                        
-                                      <div class="info-box-content">
-                                        <span class="info-box-text">Medium</span>
-                                        <span class="info-box-number">{{ warning | length}}</span>
-                                      </div>
-                                      <!-- /.info-box-content -->
-                                    </div>
-                                    <!-- /.info-box -->
-                                  </div>
-                                 
-                                  <!-- /.col -->
-                                <div class="col-md-2 col-sm-6 col-12">
-                                  <div class="info-box">
-                                    <span class="info-box-icon bg-info"><i class="fas fa-info"></i></span>
-                      
-                                    <div class="info-box-content">
-                                      <span class="info-box-text">Info</span>
-                                      <span class="info-box-number">{{ info | length}}</span>
-                                    </div>
-                                    <!-- /.info-box-content -->
-                                  </div>
-                                  <!-- /.info-box -->
-                                </div>
-                                <!-- /.col -->
-                                <div class="col-md-2 col-sm-6 col-12">
-                                    <div class="info-box">
-                                      <span class="info-box-icon bg-success"><i class="fas fa-check"></i></span>
-                        
-                                      <div class="info-box-content">
-                                        <span class="info-box-text">Secure</span>
-                                        <span class="info-box-number">{{ secure | length}}</span>
-                                      </div>
-                                      <!-- /.info-box-content -->
-                                    </div>
-                                    <!-- /.info-box -->
-                                  </div>
-                                
+                            <div class="row findings-pill-row">
 
-                              <div class="col-md-2 col-sm-6 col-12">
-                                <div class="info-box">
-                                  <span class="info-box-icon bg-secondary"><i class="fab fa-searchengin"></i></span>
-                    
-                                  <div class="info-box-content">
-                                    <span class="info-box-text"> {% if efr01 %}Need to Investigate{% else %}Hotspot{% endif %}</span>
-                                    <span class="info-box-number">{{ hotspot | length}}</span>
-                                  </div>
-                                  <!-- /.info-box-content -->
-                                </div>
-                                <!-- /.info-box -->
-                              </div>
-                            
-                          </div>
+  <div class="col">
+    <div class="finding-pill danger">
+      <div class="pill-icon"><i class="fas fa-bolt"></i></div>
+      <div class="pill-label">HIGH</div>
+      <div class="pill-count">{{ high|length }}</div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="finding-pill warning">
+      <div class="pill-icon"><i class="fas fa-exclamation-triangle"></i></div>
+      <div class="pill-label">MEDIUM</div>
+      <div class="pill-count">{{ warning|length }}</div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="finding-pill info">
+      <div class="pill-icon"><i class="fas fa-info-circle"></i></div>
+      <div class="pill-label">INFO</div>
+      <div class="pill-count">{{ info|length }}</div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="finding-pill success">
+      <div class="pill-icon"><i class="fas fa-shield-alt"></i></div>
+      <div class="pill-label">SECURE</div>
+      <div class="pill-count">{{ secure|length }}</div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="finding-pill gray">
+      <div class="pill-icon"><i class="fas fa-fire"></i></div>
+      <div class="pill-label">
+        {% if efr01 %}INVESTIGATE{% else %}HOTSPOT{% endif %}
+      </div>
+      <div class="pill-count">{{ hotspot|length }}</div>
+    </div>
+  </div>
+
+</div>
+
                              <!--end boxes-->
                             </br>
 {% for item in high %}
@@ -470,23 +1605,7 @@ sidebar-collapse
               
             </div>
         </div>
-        <div class="row">
-            <div class="col-12 mt-3 text-center">
-                <p class="lead">
-                  <h5> MobSF Application Security Scorecard generated for 
-                    <img id="app_icon2" src="/download/{{ hash }}-icon.png" onerror="this.src='{% static 'img/no_icon.png' %}'"/>
-                    ({% if app_name %}  {{ app_name }}  {% else %} {{ file_name }} {% endif %} {{ version_name }})
-                     {% if '.apk' == file_name|slice:"-4:"%}<i class="fab fa-android"></i>
-                     {% elif '.xapk' == file_name|slice:"-5:"%}<i class="fab fa-android"></i>
-                     {% elif '.apks' == file_name|slice:"-5:"%}<i class="fab fa-android"></i>
-                     {% elif '.ipa' == file_name|slice:"-4:"%}<i class="fab fa-apple"></i>
-                     {% elif '.zip' == file_name|slice:"-4:"%}<i class="fas fa-file-archive"></i>
-                     {% elif '.appx' == file_name|slice:"-5:"%}<i class="fab fa-windows"></i>
-                     {% endif %}
-                  </h5>
-                </p>
-            </div>
-        </div>
+        
     </section>
     <!-- /.content -->
   </div>
@@ -518,15 +1637,24 @@ sidebar-collapse
     }
     // Severity
 
-    const high = {{ high | length }};
-    const warn = {{warning | length}};
-    const info = {{ info | length}};
-    const secure = {{ secure | length}};
-    const total = Math.max(1, high + warn + info + secure);
-    const hp = Math.floor(high/ total * 100)
-    const wp = Math.floor(warn/ total * 100)
-    const ip = Math.floor(info/ total * 100)
-    const sp = Math.floor(secure/ total * 100)
+const high = {{ high|length }};
+  const warn = {{ warning|length }};
+  const info = {{ info|length }};
+  const secure = {{ secure|length }};
+
+  const total = high + warn + info + secure || 1;
+
+  document.getElementById("bar-high").style.width =
+    (high / total * 100) + "%";
+
+  document.getElementById("bar-warn").style.width =
+    (warn / total * 100) + "%";
+
+  document.getElementById("bar-info").style.width =
+    (info / total * 100) + "%";
+
+  document.getElementById("bar-secure").style.width =
+    (secure / total * 100) + "%";
     var ctx = document.getElementById("severity").getContext('2d');
     var myChart = new Chart(ctx, {
     type: 'pie',
@@ -557,11 +1685,45 @@ sidebar-collapse
     });
     
     // Security Score
-    $(function() {
-        $(".dial").knob({
-            'readOnly': true,
-        });
-    });
+$(function () {
+  $(".dial").knob({
+    readOnly: true,
+    min: 0,
+    max: 100,
+
+    width: 180,
+    height: 180,
+
+    thickness: 0.18,          
+    lineCap: 'round',
+
+    fgColor: function () {
+      var v = this.value;
+      if (v < 30) return "#ef4444";
+      if (v < 40) return "#f59e0b";
+      if (v < 60) return "#6366f1";
+      return "#22c55e";
+    },
+
+    bgColor: "#eef2f7",
+
+    displayInput: true,
+    displayPrevious: false,
+
+    format: function (v) {
+      return v;            
+    },
+
+    draw: function () {
+      this.i.css({
+        'font-size': '52px',
+        'font-weight': '900',
+        'font-family': 'Inter, system-ui, sans-serif'
+      });
+    }
+  });
+});
+;
 
 
     // Risk Meter
