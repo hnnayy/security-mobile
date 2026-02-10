@@ -16,6 +16,150 @@
   <link rel="stylesheet" href="{% static "adminlte/plugins/fontawesome-free/css/all.min.css" %}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static "adminlte/dashboard/css/adminlte.min.css" %}">
+
+<style>
+/* ===============================
+   DEVLOCK BRAND – PIXEL MATCH
+   =============================== */
+
+.devlock-brand {
+  display: flex !important;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background-color: #1e3a5f;
+}
+
+/* ICON */
+.devlock-logo {
+  width: 44px;
+  height: 44px;
+  background: #2563eb; /* biru solid */
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.18);
+}
+
+/* TEXT WRAPPER */
+.devlock-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+/* DEVLOCK MAIN */
+.devlock-title {
+  font-size: 20px;              /* LEBIH BESAR */
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  color: #ffffff;
+}
+
+/* DEV putih, LOCK biru */
+.devlock-title span {
+  color: #3b82f6;               /* LOCK biru */
+}
+
+/* SUBTITLE */
+.devlock-subtitle {
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #9fb6d9;
+}
+</style>
+
+  <style>
+/* ===============================
+   MobSF Blue Theme (#1e3a5f)
+   =============================== */
+:root {
+  --mobsf-blue: #1e3a5f;
+  --mobsf-blue-hover: #274b7a; /* sedikit lebih terang */
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--mobsf-blue) !important;
+}
+
+/* Sidebar */
+aside.main-sidebar.sidebar-dark-primary {
+  background-color: var(--mobsf-blue) !important;
+}
+
+/* Brand / logo area */
+aside.main-sidebar.sidebar-dark-primary .brand-link {
+  background-color: var(--mobsf-blue) !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Brand text */
+aside.main-sidebar.sidebar-dark-primary .brand-text {
+  color: #ffffff !important;
+}
+
+/* Menu text & icon */
+aside.main-sidebar.sidebar-dark-primary .nav-sidebar .nav-link,
+aside.main-sidebar.sidebar-dark-primary .nav-sidebar .nav-icon {
+  color: rgba(255,255,255,0.9) !important;
+}
+
+/* Hover */
+aside.main-sidebar.sidebar-dark-primary .nav-sidebar .nav-link:hover {
+  background-color: var(--mobsf-blue-hover) !important;
+  color: #ffffff !important;
+}
+
+/* Active */
+aside.main-sidebar.sidebar-dark-primary .nav-sidebar .nav-link.active {
+  background-color: #0d6efd !important; /* active highlight */
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Section header */
+aside.main-sidebar.sidebar-dark-primary .nav-header {
+  color: rgba(255,255,255,0.75) !important;
+}
+/* ===============================
+   SIDEBAR SECTION SPACING FIX
+   =============================== */
+
+/* Jarak antara brand DEVLOCK dan menu */
+.main-sidebar .sidebar {
+  padding-top: 18px;   /* ⬅️ INI KUNCINYA */
+}
+
+/* Khusus teks "Dynamic Analyzer" */
+.sidebar .user-panel {
+  margin-top: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Biar teksnya lebih center secara visual */
+.sidebar .user-panel .info a {
+  font-size: 14px;
+  font-weight: 600;
+  color: #cfe0ff !important;
+}
+.sidebar .user-panel .info a {
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-size: 12px;
+}
+
+</style>
+
   <!-- overlayScrollbars -->
   <link rel="stylesheet" href="{% static "adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css" %}">
   <!-- Ionicons -->
@@ -50,11 +194,29 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="{% url 'home' %}" class="brand-link">
-      <img src="{% static "img/mobsf_icon.png" %}" alt="MobSF" class="brand-image"
-           style="opacity: .8">
-      <span class="brand-text logo-lg"> | <strong> Mob</strong>SF</span>
-    </a>
+<a href="{% url 'home' %}" class="brand-link devlock-brand">
+  <div class="devlock-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+         xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L3 7V12C3 17.41 6.84 22.38 12 24C17.16 22.38 21 17.41 21 12V7L12 2Z"
+            fill="white" fill-opacity="0.25"/>
+      <path d="M9 12L11 14L15 10"
+            stroke="white"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div class="devlock-text">
+    <span class="devlock-title">
+      DEV<span>LOCK</span>
+    </span>
+    <span class="devlock-subtitle">MOBILE DEVSEC</span>
+  </div>
+</a>
+
+
     {% block sidebar %}
   
     {% endblock %}
