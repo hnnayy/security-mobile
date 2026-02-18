@@ -157,6 +157,31 @@ aside.main-sidebar.sidebar-dark-primary .nav-header {
   letter-spacing: 0.6px;
   font-size: 12px;
 }
+/* ===============================
+   SIDEBAR COLLAPSE – SHOW LOGO ONLY
+   =============================== */
+
+/* Sembunyikan teks saat sidebar collapse */
+body.sidebar-collapse .devlock-text {
+  display: none !important;
+}
+
+/* Center logo saat collapse */
+body.sidebar-collapse .devlock-brand {
+  justify-content: center !important;
+  padding: 14px 0 !important;
+}
+
+/* Pastikan logo tetap ukuran normal */
+body.sidebar-collapse .devlock-logo {
+  margin: 0 auto;
+}
+
+/* Optional: kecilkan sedikit biar lebih clean */
+body.sidebar-collapse .devlock-logo {
+  width: 42px;
+  height: 42px;
+}
 
 </style>
 
