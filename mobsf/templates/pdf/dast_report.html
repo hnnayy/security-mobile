@@ -1,0 +1,630 @@
+{% load static %}
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Dynamic Analysis Security Report</title>
+    <meta name="description" content="Dynamic Analysis Security Report">
+<style>
+
+/* ===== GLOBAL FIX ===== */
+body {
+  font-family: 'Open Sans', sans-serif;
+  color: #2c3e50;
+  background: #ffffff;
+  margin: 0;
+  padding: 18px;
+  font-size: 17px !important;   /* 🔥 PAKSA BESAR */
+  line-height: 1.6;
+}
+
+/* ===== CONTAINER ===== */
+article, .container {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  page-break-inside: avoid;
+  border-left: 4px solid #3b82f6;
+}
+
+/* ===== HEADER ===== */
+.htext {
+  font-size: 32px !important;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ===== HEADING ===== */
+h1 {
+  font-size: 34px !important;
+  margin: 8px 0;
+  text-align: center;
+}
+
+h2 {
+  font-size: 22px !important;
+  margin-bottom: 8px;
+  border-left: 4px solid #007bff;
+  padding-left: 10px;
+}
+
+h3 {
+  font-size: 18px !important;
+  margin: 4px 0;
+}
+
+h5 {
+  font-size: 15px !important;
+  color: #6c757d;
+}
+
+/* ===== TEXT ===== */
+p, li {
+  font-size: 15px !important;
+  margin: 2px 0;
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+
+table.basic th {
+  background: #eef2f7;
+  padding: 8px;
+  font-size: 15px !important;
+}
+
+table.basic td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 15px !important;
+}
+
+/* ===== REMOVE SPACE KOSONG ===== */
+br {
+  display: none !important;
+}
+
+/* ===== BADGE TEXT ===== */
+.danger, .high { color: #e74c3c; font-weight: 600; }
+.warning { color: #f39c12; font-weight: 600; }
+.success { color: #28a745; font-weight: 600; }
+.info { color: #17a2b8; font-weight: 600; }
+
+/* ===== FOOTER ===== */
+.footer {
+  margin-top: 15px;
+  padding-top: 8px;
+  border-top: 1px solid #ddd;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ===== FIX PDF ===== */
+* {
+  max-width: 100%;
+}
+
+tr, td {
+  page-break-inside: avoid;
+}
+/* ===== FIX TEXT AGAR TIDAK KE POTONG ===== */
+
+/* ===== FIX BIAR TEXT TIDAK PECAH PER HURUF ===== */
+td, th, p, li {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+}
+
+/* ===== KHUSUS LABEL (KIRI) JANGAN PECAH ===== */
+
+/* VALUE (KANAN) */
+td:last-child {
+  width: auto;
+  white-space: normal;
+}
+
+/* ===== VALUE (KANAN) BOLEH WRAP ===== */
+td:last-child {
+  white-space: normal;
+}
+
+/* ===== TABLE LEBIH FLEXIBLE ===== */
+table {
+  table-layout: auto;
+}
+
+/* kolom pertama kecil */
+td:first-child {
+  width: 200px;
+  white-space: nowrap;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* kolom isi auto wrap */
+td:last-child {
+  width: auto;
+}
+
+/* biar gak keluar container */
+article {
+  overflow: hidden;
+}
+
+/* khusus kode / hash panjang */
+code, pre {
+  word-break: break-all;
+}
+
+/* bullet list */
+p {
+  white-space: normal;
+}
+/* ===== BIAR URL PANJANG TURUN ===== */
+a {
+  word-break: break-all;
+}
+
+/* ===== FIX TABLE COLUMN ===== */
+th:nth-child(2), td:nth-child(2) {
+  width: 70%;
+}
+/* ===== CENTER KHUSUS KOLOM RESULT TLS ===== */
+#tls table.basic td:last-child,
+#tls table.basic th:last-child {
+  text-align: center !important;
+  vertical-align: middle;
+}
+</style>
+
+  </head>
+    <body>
+    <!-- ===== COVER PAGE ===== -->
+    <article id="cover">
+      <div class="header">
+        <div class="htext">DYNAMIC ANALYSIS SECURITY REPORT</div>
+      </div>
+<div style="height:40px;"></div>
+      <div class="container">
+        <table class="basic no_border">
+          <tr class="no_border">
+            <td class="no_border"><h5>Package Name:</h5></td>
+            <td class="no_border"><h5>{{ package }}</h5></td>
+          </tr>
+          <tr>
+            <td class="no_border"><h5>Analysis Hash:</h5></td>
+            <td class="no_border"><h5>{{ hash }}</h5></td>
+          </tr>
+          <tr>
+            <td class="no_border"><h5>Report Type:</h5></td>
+            <td class="no_border"><h5>{{ title }}</h5></td>
+          </tr>
+          <tr>
+            <td class="no_border"><h5>Framework Version:</h5></td>
+            <td class="no_border"><h5>{{ version }}</h5></td>
+          </tr>
+        </table>
+      </div>
+
+
+    </article>
+
+    <!-- ===== NETWORK COMMUNICATION ===== -->
+    <article>
+      <h2>NETWORK COMMUNICATION</h2>
+
+      {% if urls %}
+      <h3>URLs Contacted</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for url in urls %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ url }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">No URLs detected during analysis</div>
+      {% endif %}
+
+      {% if domains %}
+      <h3>Domains Contacted</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Domain</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for domain in domains %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ domain }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">No domains detected during analysis</div>
+      {% endif %}
+    </article>
+
+    <!-- ===== SENSITIVE DATA ===== -->
+    <article>
+      <h2>SENSITIVE DATA EXTRACTION</h2>
+
+      {% if emails %}
+      <h3>Emails Found</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Email Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for email in emails %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ email }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">No email addresses detected</div>
+      {% endif %}
+
+      {% if clipboard %}
+      <h3>Clipboard Data Captured</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in clipboard %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">No clipboard data was captured</div>
+      {% endif %}
+    </article>
+
+    <!-- ===== API MONITORING ===== -->
+    {% if apimon %}
+    <article>
+      <h2>FRIDA API MONITORING</h2>
+      <div class="data-box">{{ apimon | safe }}</div>
+    </article>
+    {% endif %}
+
+    <!-- ===== DROIDMON ===== -->
+    {% if droidmon %}
+    <article>
+      <h2>XPOSED API MONITORING</h2>
+      <div class="data-box">{{ droidmon | safe }}</div>
+    </article>
+    {% endif %}
+
+    <!-- ===== BASE64 STRINGS ===== -->
+    {% if base64_strings %}
+    <article>
+      <h2>BASE64 STRINGS DECODED</h2>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Decoded String</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in base64_strings %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </article>
+    {% endif %}
+
+    <!-- ===== TRACKER DETECTION ===== -->
+    <article>
+      <h2>TRACKER DETECTION</h2>
+      {% if trackers %}
+        {% if trackers.detected_trackers > 0 %}
+        <div class="card">
+          <div class="card-header">
+            
+            <p class="card-title">{{ trackers.detected_trackers }} Tracker(s) Detected out of {{ trackers.total_trackers }}</p>
+          </div>
+        </div>
+        <table class="basic">
+          <thead>
+            <tr>
+              <th style="width: 5%;">#</th>
+              <th>Tracker Name</th>
+              <th>Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for tracker in trackers.tracker_list %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ tracker.name }}</td>
+              <td>{{ tracker.category }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No trackers detected</div>
+        {% endif %}
+      {% else %}
+      <div class="empty-state">No tracker information available</div>
+      {% endif %}
+    </article>
+
+    <!-- ===== RUNTIME DEPENDENCIES ===== -->
+    <article>
+      <h2>RUNTIME DEPENDENCIES</h2>
+      {% if runtime_dependencies %}
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Library / Dependency</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dep in runtime_dependencies %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ dep }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">No runtime dependencies detected</div>
+      {% endif %}
+    </article>
+
+    <!-- ===== TLS/SSL ANALYSIS ===== -->
+    {% if tls_tests %}
+    <article>
+      <h2>TLS/SSL SECURITY ANALYSIS</h2>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Test Description</th>
+            <th style="width: 20%;">Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Cleartext Traffic Test</td>
+            <td>
+              {% if tls_tests.has_cleartext %}
+              <span class="badge badge-danger">✗ FAILED</span>
+              {% else %}
+              <span class="badge badge-success">✓ PASSED</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>TLS Misconfiguration Test</td>
+            <td>
+              {% if tls_tests.tls_misconfigured %}
+              <span class="badge badge-danger">✗ FAILED</span>
+              {% else %}
+              <span class="badge badge-success">✓ PASSED</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>TLS Pinning/Certificate Transparency Bypass Test</td>
+            <td>
+              {% if tls_tests.pin_or_transparency_bypassed %}
+              <span class="badge badge-danger">✗ FAILED</span>
+              {% else %}
+              <span class="badge badge-success">✓ PASSED</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>TLS Pinning/Certificate Transparency Test</td>
+            <td>
+              {% if tls_tests.no_tls_pin_or_transparency %}
+              <span class="badge badge-danger">✗ FAILED</span>
+              {% else %}
+              <span class="badge badge-success">✓ PASSED</span>
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </article>
+    {% endif %}
+
+    <!-- ===== FILE SYSTEM DATA ===== -->
+    <article>
+      <h2>FILE SYSTEM DATA</h2>
+
+      {% if xml %}
+      <h3>XML Configuration Files</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>File Path</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in xml %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ file }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      {% if sqlite %}
+      <h3>SQLite Databases</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Database File</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for db in sqlite %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ db }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      {% if others %}
+      <h3>Other Files</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>File Path</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in others %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ file }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      {% if not xml and not sqlite and not others %}
+      <div class="empty-state">No application files extracted</div>
+      {% endif %}
+    </article>
+
+    
+    <!-- ===== ACTIVITY TESTING ===== -->
+    {% if activity_tester %}
+    <article>
+      <h2>ACTIVITY TESTING</h2>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Activity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for activity, img in activity_tester.items %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ activity }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </article>
+    {% endif %}
+
+    <!-- ===== EXPORTED ACTIVITY TESTING ===== -->
+    {% if exported_activity_tester %}
+    <article>
+      <h2>EXPORTED ACTIVITY TESTING</h2>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Activity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for activity, img in exported_activity_tester.items %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ activity }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </article>
+    {% endif %}
+
+    <!-- ===== REPORT FOOTER ===== -->
+    <article>
+      <div class="footer">
+        <h3 style="margin-top: 60px;">Report Summary</h3>
+        <table class="basic">
+          <tr>
+            <td><strong>Analysis Package</strong></td>
+            <td>{{ package }}</td>
+          </tr>
+          <tr>
+            <td><strong>Hash (MD5)</strong></td>
+            <td>{{ hash }}</td>
+          </tr>
+          <tr>
+            <td><strong>Report Type</strong></td>
+            <td>{{ title }}</td>
+          </tr>
+          <tr>
+<td class="no_border"><h5>Framework Version:</h5></td>
+<td class="no_border"><h5>{{ version }}</h5></td>
+          </tr>
+        </table>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+          <p class="text-center text-muted">
+         
+          </p>
+          <p class="text-center text-muted">
+            This report contains sensitive security analysis information. Handle with care.
+          </p>
+        </div>
+      </div>
+    </article>
+  </body>
+</html>

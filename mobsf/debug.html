@@ -1,0 +1,559 @@
+
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Dynamic Analysis Security Report</title>
+    <meta name="description" content="Dynamic Analysis Security Report">
+<style>
+
+/* ===== GLOBAL FIX ===== */
+body {
+  font-family: 'Open Sans', sans-serif;
+  color: #2c3e50;
+  background: #ffffff;
+  margin: 0;
+  padding: 18px;
+  font-size: 17px !important;   /* 🔥 PAKSA BESAR */
+  line-height: 1.6;
+}
+
+/* ===== CONTAINER ===== */
+article, .container {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  page-break-inside: avoid;
+  border-left: 4px solid #3b82f6;
+}
+
+/* ===== HEADER ===== */
+.htext {
+  font-size: 32px !important;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ===== HEADING ===== */
+h1 {
+  font-size: 34px !important;
+  margin: 8px 0;
+  text-align: center;
+}
+
+h2 {
+  font-size: 22px !important;
+  margin-bottom: 8px;
+  border-left: 4px solid #007bff;
+  padding-left: 10px;
+}
+
+h3 {
+  font-size: 18px !important;
+  margin: 4px 0;
+}
+
+h5 {
+  font-size: 15px !important;
+  color: #6c757d;
+}
+
+/* ===== TEXT ===== */
+p, li {
+  font-size: 15px !important;
+  margin: 2px 0;
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+
+table.basic th {
+  background: #eef2f7;
+  padding: 8px;
+  font-size: 15px !important;
+}
+
+table.basic td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 15px !important;
+}
+
+/* ===== REMOVE SPACE KOSONG ===== */
+br {
+  display: none !important;
+}
+
+/* ===== BADGE TEXT ===== */
+.danger, .high { color: #e74c3c; font-weight: 600; }
+.warning { color: #f39c12; font-weight: 600; }
+.success { color: #28a745; font-weight: 600; }
+.info { color: #17a2b8; font-weight: 600; }
+
+/* ===== FOOTER ===== */
+.footer {
+  margin-top: 15px;
+  padding-top: 8px;
+  border-top: 1px solid #ddd;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ===== FIX PDF ===== */
+* {
+  max-width: 100%;
+}
+
+tr, td {
+  page-break-inside: avoid;
+}
+/* ===== FIX TEXT AGAR TIDAK KE POTONG ===== */
+
+/* ===== FIX BIAR TEXT TIDAK PECAH PER HURUF ===== */
+td, th, p, li {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+}
+
+/* ===== KHUSUS LABEL (KIRI) JANGAN PECAH ===== */
+
+/* VALUE (KANAN) */
+td:last-child {
+  width: auto;
+  white-space: normal;
+}
+
+/* ===== VALUE (KANAN) BOLEH WRAP ===== */
+td:last-child {
+  white-space: normal;
+}
+
+/* ===== TABLE LEBIH FLEXIBLE ===== */
+table {
+  table-layout: auto;
+}
+
+/* kolom pertama kecil */
+td:first-child {
+  width: 200px;
+  white-space: nowrap;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* kolom isi auto wrap */
+td:last-child {
+  width: auto;
+}
+
+/* biar gak keluar container */
+article {
+  overflow: hidden;
+}
+
+/* khusus kode / hash panjang */
+code, pre {
+  word-break: break-all;
+}
+
+/* bullet list */
+p {
+  white-space: normal;
+}
+/* ===== BIAR URL PANJANG TURUN ===== */
+a {
+  word-break: break-all;
+}
+
+/* ===== FIX TABLE COLUMN ===== */
+th:nth-child(2), td:nth-child(2) {
+  width: 70%;
+}
+/* ===== CENTER KHUSUS KOLOM RESULT TLS ===== */
+#tls table.basic td:last-child,
+#tls table.basic th:last-child {
+  text-align: center !important;
+  vertical-align: middle;
+}
+</style>
+
+  </head>
+    <body>
+    <!-- ===== COVER PAGE ===== -->
+    <article id="cover">
+      <div class="header">
+        <div class="htext">DYNAMIC ANALYSIS SECURITY REPORT</div>
+      </div>
+<div style="height:40px;"></div>
+      <div class="container">
+        <table class="basic no_border">
+          <tr class="no_border">
+            <td class="no_border"><h5>Package Name:</h5></td>
+            <td class="no_border"><h5>com.example.mobileapp</h5></td>
+          </tr>
+          <tr>
+            <td class="no_border"><h5>Analysis Hash:</h5></td>
+            <td class="no_border"><h5>8ca46ba2ab3c6ec41647f821b702ad8d</h5></td>
+          </tr>
+          <tr>
+            <td class="no_border"><h5>Report Type:</h5></td>
+            <td class="no_border"><h5>Dynamic Analysis</h5></td>
+          </tr>
+          <tr>
+            <td class="no_border"><h5>Framework Version:</h5></td>
+            <td class="no_border"><h5>v4.4.3</h5></td>
+          </tr>
+        </table>
+      </div>
+
+
+    </article>
+
+    <!-- ===== NETWORK COMMUNICATION ===== -->
+    <article>
+      <h2>NETWORK COMMUNICATION</h2>
+
+      
+      <h3>URLs Contacted</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>1</td>
+            <td>file:///storage/0000-0000</td>
+          </tr>
+          
+          <tr>
+            <td>2</td>
+            <td>http://127.0.0.1:43179/lbmpujthvm4=/</td>
+          </tr>
+          
+          <tr>
+            <td>3</td>
+            <td>file:///storage/emulated/0</td>
+          </tr>
+          
+          <tr>
+            <td>4</td>
+            <td>http://connectivitycheck.gstatic.com/generate_204</td>
+          </tr>
+          
+          <tr>
+            <td>5</td>
+            <td>www.google.com</td>
+          </tr>
+          
+          <tr>
+            <td>6</td>
+            <td>http://www.google.com</td>
+          </tr>
+          
+          <tr>
+            <td>7</td>
+            <td>http://127.0.0.1:41097/e9vholbl6mu=/</td>
+          </tr>
+          
+          <tr>
+            <td>8</td>
+            <td>http://127.0.0.1:46451/l0n1zv6-y0o=/</td>
+          </tr>
+          
+          <tr>
+            <td>9</td>
+            <td>http://mms.msg.eng.t-mobile.com/mms/wapenc</td>
+          </tr>
+          
+          <tr>
+            <td>10</td>
+            <td>http://127.0.0.1:42073/got1ijodbqa=/</td>
+          </tr>
+          
+          <tr>
+            <td>11</td>
+            <td>https://www.google.com/generate_204</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+
+      
+      <h3>Domains Contacted</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Domain</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>1</td>
+            <td>www.google.com</td>
+          </tr>
+          
+          <tr>
+            <td>2</td>
+            <td>connectivitycheck.gstatic.com</td>
+          </tr>
+          
+          <tr>
+            <td>3</td>
+            <td>127.0.0.1</td>
+          </tr>
+          
+          <tr>
+            <td>4</td>
+            <td>mms.msg.eng.t-mobile.com</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    </article>
+
+    <!-- ===== SENSITIVE DATA ===== -->
+    <article>
+      <h2>SENSITIVE DATA EXTRACTION</h2>
+
+      
+      <h3>Emails Found</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Email Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>1</td>
+            <td>0@com.android</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+
+      
+      <div class="empty-state">No clipboard data was captured</div>
+      
+    </article>
+
+    <!-- ===== API MONITORING ===== -->
+    
+
+    <!-- ===== DROIDMON ===== -->
+    
+
+    <!-- ===== BASE64 STRINGS ===== -->
+    
+
+    <!-- ===== TRACKER DETECTION ===== -->
+    <article>
+      <h2>TRACKER DETECTION</h2>
+      
+        
+        <div class="empty-state">No trackers detected</div>
+        
+      
+    </article>
+
+    <!-- ===== RUNTIME DEPENDENCIES ===== -->
+    <article>
+      <h2>RUNTIME DEPENDENCIES</h2>
+      
+      <div class="empty-state">No runtime dependencies detected</div>
+      
+    </article>
+
+    <!-- ===== TLS/SSL ANALYSIS ===== -->
+    
+    <article>
+      <h2>TLS/SSL SECURITY ANALYSIS</h2>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Test Description</th>
+            <th style="width: 20%;">Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Cleartext Traffic Test</td>
+            <td>
+              
+              <span class="badge badge-success">✓ PASSED</span>
+              
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>TLS Misconfiguration Test</td>
+            <td>
+              
+              <span class="badge badge-success">✓ PASSED</span>
+              
+            </td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>TLS Pinning/Certificate Transparency Bypass Test</td>
+            <td>
+              
+              <span class="badge badge-success">✓ PASSED</span>
+              
+            </td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>TLS Pinning/Certificate Transparency Test</td>
+            <td>
+              
+              <span class="badge badge-success">✓ PASSED</span>
+              
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </article>
+    
+
+    <!-- ===== FILE SYSTEM DATA ===== -->
+    <article>
+      <h2>FILE SYSTEM DATA</h2>
+
+      
+
+      
+      <h3>SQLite Databases</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>Database File</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>1</td>
+            <td>{&#x27;type&#x27;: &#x27;db&#x27;, &#x27;file&#x27;: &#x27;C:/Users/Lenovo/.MobSF/uploads/8ca46ba2ab3c6ec41647f821b702ad8d/DYNAMIC_DeviceData\\datadatacom.example.mobileappdatabasesfirestore.5BDEFAULT5D.todo-ed684.28default29&#x27;}</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+
+      
+      <h3>Other Files</h3>
+      <table class="basic">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th>File Path</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>1</td>
+            <td>{&#x27;type&#x27;: &#x27;others&#x27;, &#x27;file&#x27;: &#x27;C:/Users/Lenovo/.MobSF/uploads/8ca46ba2ab3c6ec41647f821b702ad8d/DYNAMIC_DeviceData\\datadatacom.example.mobileappapp_flutterflutter_assetsisolate_snapshot_data&#x27;}</td>
+          </tr>
+          
+          <tr>
+            <td>2</td>
+            <td>{&#x27;type&#x27;: &#x27;others&#x27;, &#x27;file&#x27;: &#x27;C:/Users/Lenovo/.MobSF/uploads/8ca46ba2ab3c6ec41647f821b702ad8d/DYNAMIC_DeviceData\\datadatacom.example.mobileappapp_flutterflutter_assetskernel_blob.bin&#x27;}</td>
+          </tr>
+          
+          <tr>
+            <td>3</td>
+            <td>{&#x27;type&#x27;: &#x27;others&#x27;, &#x27;file&#x27;: &#x27;C:/Users/Lenovo/.MobSF/uploads/8ca46ba2ab3c6ec41647f821b702ad8d/DYNAMIC_DeviceData\\datadatacom.example.mobileappapp_flutterflutter_assetsvm_snapshot_data&#x27;}</td>
+          </tr>
+          
+          <tr>
+            <td>4</td>
+            <td>{&#x27;type&#x27;: &#x27;others&#x27;, &#x27;file&#x27;: &#x27;C:/Users/Lenovo/.MobSF/uploads/8ca46ba2ab3c6ec41647f821b702ad8d/DYNAMIC_DeviceData\\datadatacom.example.mobileappapp_flutterres_timestamp-1-1776073820869&#x27;}</td>
+          </tr>
+          
+          <tr>
+            <td>5</td>
+            <td>{&#x27;type&#x27;: &#x27;others&#x27;, &#x27;file&#x27;: &#x27;C:/Users/Lenovo/.MobSF/uploads/8ca46ba2ab3c6ec41647f821b702ad8d/DYNAMIC_DeviceData\\datadatacom.example.mobileappdatabasesfirestore.5BDEFAULT5D.todo-ed684.28default29-journal&#x27;}</td>
+          </tr>
+          
+          <tr>
+            <td>6</td>
+            <td>{&#x27;type&#x27;: &#x27;others&#x27;, &#x27;file&#x27;: &#x27;C:/Users/Lenovo/.MobSF/uploads/8ca46ba2ab3c6ec41647f821b702ad8d/DYNAMIC_DeviceData\\datadatacom.example.mobileappfilesdatastoreFirebaseHeartBeatW0RFRkFVTFRdMToxMDY3NTQzMTg2MDM2OmFuZHJvaWQ6ZDY0N2Y1YjI1YzI3NTIwOGM0ZGYyMQ.preferences_pb&#x27;}</td>
+          </tr>
+          
+          <tr>
+            <td>7</td>
+            <td>{&#x27;type&#x27;: &#x27;others&#x27;, &#x27;file&#x27;: &#x27;C:/Users/Lenovo/.MobSF/uploads/8ca46ba2ab3c6ec41647f821b702ad8d/DYNAMIC_DeviceData\\datadatacom.example.mobileappfilesprofileInstalled&#x27;}</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+
+      
+    </article>
+
+    
+    <!-- ===== ACTIVITY TESTING ===== -->
+    
+
+    <!-- ===== EXPORTED ACTIVITY TESTING ===== -->
+    
+
+    <!-- ===== REPORT FOOTER ===== -->
+    <article>
+      <div class="footer">
+        <h3 style="margin-top: 60px;">Report Summary</h3>
+        <table class="basic">
+          <tr>
+            <td><strong>Analysis Package</strong></td>
+            <td>com.example.mobileapp</td>
+          </tr>
+          <tr>
+            <td><strong>Hash (MD5)</strong></td>
+            <td>8ca46ba2ab3c6ec41647f821b702ad8d</td>
+          </tr>
+          <tr>
+            <td><strong>Report Type</strong></td>
+            <td>Dynamic Analysis</td>
+          </tr>
+          <tr>
+<td class="no_border"><h5>Framework Version:</h5></td>
+<td class="no_border"><h5>v4.4.3</h5></td>
+          </tr>
+        </table>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+          <p class="text-center text-muted">
+         
+          </p>
+          <p class="text-center text-muted">
+            This report contains sensitive security analysis information. Handle with care.
+          </p>
+        </div>
+      </div>
+    </article>
+  </body>
+</html>

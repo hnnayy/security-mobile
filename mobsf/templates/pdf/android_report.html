@@ -1,11 +1,322 @@
 {% block content %}
 {% load static %}
+<style>
+/* ===== GLOBAL ===== */
+body {
+  font-family: 'Open Sans', sans-serif;
+  color: #2c3e50;
+  background: #f4f6f9;
+  margin: 0;
+  padding: 20px;
+}
+
+/* ===== CARD STYLE ===== */
+.container, article {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ===== HEADER ===== */
+.header {
+  text-align: center;
+  padding: 20px;
+}
+
+.logo {
+  width: 120px;
+}
+
+.htext {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1f2d3d;
+  margin-top: 10px;
+}
+
+/* ===== APP ICON ===== */
+#icon {
+  width: 100px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* ===== TITLE ===== */
+h1 {
+  font-size: 24px;
+  margin-top: 10px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  border-left: 5px solid #007bff;
+  padding-left: 10px;
+}
+
+h3 {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+h5 {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* ===== TABLE ===== */
+table.basic {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table.basic th {
+  background: #f1f3f5;
+  padding: 10px;
+  text-align: left;
+  font-weight: 600;
+}
+
+table.basic td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/* ===== BADGES ===== */
+.danger {
+  color: #fff;
+  background: #e74c3c;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+}
+
+.warning {
+  color: #fff;
+  background: #f39c12;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+}
+
+.success {
+  color: #fff;
+  background: #28a745;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+}
+
+.info {
+  color: #fff;
+  background: #17a2b8;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+}
+
+/* ===== GRADE BADGE ===== */
+.grade {
+  padding: 10px 20px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  border-radius: 10px;
+}
+
+/* ===== SPACING FIX ===== */
+br {
+  line-height: 8px;
+}
+
+/* ===== REMOVE OLD TABLE LOOK ===== */
+.no_border td {
+  border: none !important;
+}
+
+/* ===== CENTER ===== */
+.center {
+  text-align: center;
+}
+
+/* ===== SECTION SEPARATOR ===== */
+hr {
+  border: none;
+  height: 1px;
+  background: #ddd;
+  margin: 20px 0;
+}
+<style>
+
+/* ===== RESET TABLE BIAR GAK BERANTAKAN ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* ===== TABLE MODERN ===== */
+table.basic {
+  margin-top: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+table.basic th {
+  background: #eef2f7;
+  color: #2c3e50;
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 12px;
+  border: none;
+}
+
+table.basic td {
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 12px;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+/* ===== HILANGIN GARIS KASAR ===== */
+table.basic tr {
+  border: none;
+}
+
+/* ===== SECTION TITLE ===== */
+h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  padding-left: 12px;
+  border-left: 5px solid #3b82f6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== BADGE FIX ===== */
+.danger, .warning, .success, .info {
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* ===== ROW NUMBER (BIAR CENTER) ===== */
+td:first-child {
+  text-align: center;
+  width: 40px;
+}
+
+/* ===== COLUMN WIDTH FIX ===== */
+th:nth-child(2), td:nth-child(2) {
+  width: 120px;
+}
+
+th:nth-child(3), td:nth-child(3) {
+  width: 120px;
+}
+
+/* ===== DESCRIPTION BIAR GAK MELEBAR ===== */
+td:last-child {
+  width: auto;
+}
+
+/* ===== SECTION BOX (INI PENTING BANGET) ===== */
+article {
+  page-break-inside: avoid;
+  margin-bottom: 20px;
+}
+
+/* ===== FIX ICON + TITLE ===== */
+h2 i {
+  font-size: 16px;
+  color: #3b82f6;
+}
+
+/* ===== SPACING ANTAR SECTION ===== */
+h2 + span,
+h2 + table {
+  margin-top: 8px;
+}
+
+/* ===== BADGE GROUP (HIGH | WARNING | INFO) ===== */
+.description-header {
+  display: inline-block;
+  margin-right: 10px;
+  font-size: 12px;
+}
+
+/* ===== FIX OVERFLOW PDF ===== */
+* {
+  max-width: 100%;
+}
+
+/* ===== BIAR GAK KEPOTONG PDF ===== */
+tr, td, th {
+  page-break-inside: avoid;
+}
+
+/* ===== IMPROVE LOOK LIKE DASHBOARD ===== */
+.container {
+  border-left: 4px solid #3b82f6;
+}
+
+</style>
+
+</style>
+<style>
+
+/* ===== REMOVE SEMUA STYLE KAPSUL BADGE ===== */
+.danger,
+.warning,
+.success,
+.info,
+.secondary {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  display: inline !important;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ===== WARNA TEKS ===== */
+.danger {
+  color: #e74c3c !important;
+}
+
+.warning {
+  color: #f39c12 !important;
+}
+
+.success {
+  color: #28a745 !important;
+}
+
+.info {
+  color: #17a2b8 !important;
+}
+
+.secondary {
+  color: #6c757d !important;
+}
+
+</style>
+
 <!doctype html>
 <html>
   <head>
     <meta charset="utf-8">
-    <title>MobSF Static Analysis Report</title>
-    <meta name="description" content="MobSF Report">
+    <title>Security Analysis Report</title>
+    <meta name="description" content="Security Analysis Report">
     {% if host_os == 'windows' %}
         <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
@@ -38,8 +349,7 @@
   <body bgcolor="FFFFFF">
     <article id="cover">
       <div class="header">
-        <img src="{{base_url}}{% static "img/mobsf_logo.png" %}" class="center logo" alt="MobSF Logo"/>
-        <div class="htext">ANDROID STATIC ANALYSIS REPORT </div>
+        <div class="htext">MOBILE APPLICATION SECURITY REPORT</div>
       </div>
       </br></br></br>
      <div class="app">
@@ -1097,15 +1407,6 @@
     <article id="columns">
       </br>
       <hr>
-      <h3>Report Generated by - MobSF {{ version }} </h3>
-      <section>
-        <p>
-          Mobile Security Framework (MobSF) is an automated, all-in-one mobile application (Android/iOS/Windows) pen-testing, malware analysis and security assessment framework capable of performing static and dynamic analysis.
-        </p>
-        <p>
-        <strong>© {% now "Y" %} Mobile Security Framework - MobSF | <a href="https://ajinabraham.com">Ajin Abraham</a> | <a href="https://opensecurity.in">OpenSecurity</a>.</strong>
-      </p>
-      </section>
     </article>
   </body>
 </html>

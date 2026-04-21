@@ -749,11 +749,9 @@ div.dt-buttons *,
             </ul>
           </li>
           <li class="nav-item">
-            <a href="javascript:window.print()" class="nav-link">
-            <i class="nav-icon fas fa-print"></i>
-            <p>
-              Download / Print Report
-            </p>
+            <a href="{% url 'dynamic_pdf' checksum=hash %}" class="nav-link">
+              <i class="fas fa-file-pdf nav-icon"></i>
+              <p>Download PDF Report</p>
             </a>
           </li>
         </ul>

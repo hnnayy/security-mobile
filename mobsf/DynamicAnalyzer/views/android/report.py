@@ -1,11 +1,15 @@
 # -*- coding: utf_8 -*-
 """Dynamic Analyzer Reporting."""
+import json
 import logging
 import os
+import platform
 
 from django.conf import settings
 from django.shortcuts import render
 from django.template.defaulttags import register
+from django.template.loader import render_to_string, get_template
+from django.http import HttpResponse
 
 import mobsf.MalwareAnalyzer.views.Trackers as Trackers
 from mobsf.DynamicAnalyzer.views.android.analysis import (
@@ -105,3 +109,96 @@ def view_report(request, checksum, api=False):
         logger.exception('Dynamic Analysis Report Generation')
         err = 'Error Generating Dynamic Analysis Report. ' + str(exp)
         return print_n_send_error_response(request, err, api)
+
+
+def pdf_report(request, checksum, api=False):  # ❗ HAPUS login_required
+    """Generate PDF Report for Dynamic Analysis."""
+    try:
+        import pdfkit
+
+        if not is_md5(checksum):
+            return HttpResponse(
+                json.dumps({'error': 'Invalid Hash'}),
+                content_type='application/json',
+                status=400
+            )
+
+        package = get_package_name(checksum)
+        app_dir = os.path.join(settings.UPLD_DIR, checksum + '/')
+        tools_dir = settings.TOOLS_DIR
+
+        analysis_result = run_analysis(app_dir, checksum, package)
+
+        domains = analysis_result['domains']
+        deps = dependency_analysis(package, app_dir)
+
+        trk = Trackers.Trackers(checksum, app_dir, tools_dir)
+        trackers = trk.get_trackers_domains_or_deps(domains, deps)
+
+        images = get_screenshots(checksum, settings.DWD_DIR)
+
+        context = {
+            'hash': checksum,
+            'emails': analysis_result['emails'],
+            'urls': analysis_result['urls'],
+            'domains': domains,
+            'clipboard': analysis_result['clipboard'],
+            'xml': analysis_result['xml'],
+            'sqlite': analysis_result['sqlite'],
+            'others': analysis_result['other_files'],
+            'tls_tests': analysis_result['tls_tests'],
+            'screenshots': images['screenshots'],
+            'activity_tester': images['activities'],
+            'exported_activity_tester': images['exported_activities'],
+            'droidmon': {},
+            'apimon': {},
+            'base64_strings': [],
+            'trackers': trackers,
+            'runtime_dependencies': list(deps),
+            'package': package,
+            'version': settings.MOBSF_VER,
+            'title': 'Dynamic Analysis'
+        }
+
+        template = get_template('pdf/dast_report.html')
+        html = template.render(context)
+
+        # 🔥 DEBUG HTML (WAJIB buat cek)
+        debug_path = os.path.join(settings.BASE_DIR, "debug.html")
+        with open(debug_path, "w", encoding="utf-8") as f:
+            f.write(html)
+
+        options = {
+            'enable-local-file-access': '',
+            'javascript-delay': '5000',  # 🔥 dinaikin
+            'no-stop-slow-scripts': '',
+            'load-error-handling': 'ignore',
+            'load-media-error-handling': 'ignore',
+        }
+
+        config = pdfkit.configuration(
+            wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+        )
+
+        # 🔥 PENTING: ganti ke from_string
+        pdf_data = pdfkit.from_string(html, False, options=options, configuration=config)
+
+        # 🔥 VALIDASI LEBIH LONGGAR
+        if not pdf_data or len(pdf_data) < 5000:
+            return HttpResponse(
+                json.dumps({"error": f"PDF too small: {len(pdf_data) if pdf_data else 0} bytes"}),
+                content_type='application/json',
+                status=500
+            )
+
+        response = HttpResponse(pdf_data, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="dast_report_{checksum}.pdf"'
+        return response
+
+    except Exception as exp:
+        logger.exception('Error generating PDF report')
+        return HttpResponse(
+            json.dumps({'error': str(exp)}),
+            content_type='application/json',
+            status=500
+        )
