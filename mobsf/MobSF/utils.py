@@ -117,12 +117,12 @@ def print_version():
     if platform.system() == 'Windows':
         logger.info('Mobile Security Framework %s', ver)
         print(f'REST API Key: {mobsf_api_key}')
-        print('Default Credentials: mobsf/mobsf')
+        print('Default Credentials: hacker/hacker')
     else:
         logger.info(
             '%sMobile Security Framework %s%s', Color.GREY, ver, Color.END)
         print(f'REST API Key: {Color.BOLD}{mobsf_api_key}{Color.END}')
-        print(f'Default Credentials: {Color.BOLD}mobsf/mobsf{Color.END}')
+        print(f'Default Credentials: {Color.BOLD}hacker/hacker{Color.END}')
     os = platform.system()
     pltfm = platform.platform()
     dist = ' '.join(distro.linux_distribution(

@@ -22,8 +22,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     MOBSF_ADB_BINARY=/usr/bin/adb \
     JAVA_HOME=/jdk-22.0.2 \
     PATH=/jdk-22.0.2/bin:/root/.local/bin:$PATH \
-    DJANGO_SUPERUSER_USERNAME=mobsf \
-    DJANGO_SUPERUSER_PASSWORD=mobsf
+    DJANGO_SUPERUSER_USERNAME=hacker \
+    DJANGO_SUPERUSER_PASSWORD=hacker
 
 # See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
 RUN apt update -y && \

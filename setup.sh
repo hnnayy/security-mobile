@@ -48,8 +48,8 @@ bash scripts/clean.sh y
 
 # Database setup and superuser creation
 echo '[INSTALL] Migrating Database'
-export DJANGO_SUPERUSER_USERNAME=mobsf
-export DJANGO_SUPERUSER_PASSWORD=mobsf
+export DJANGO_SUPERUSER_USERNAME=hacker
+export DJANGO_SUPERUSER_PASSWORD=hacker
 python3 -m poetry run python manage.py makemigrations
 python3 -m poetry run python manage.py makemigrations StaticAnalyzer
 python3 -m poetry run python manage.py migrate
