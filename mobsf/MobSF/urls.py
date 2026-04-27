@@ -80,6 +80,8 @@ urlpatterns = [
     re_path(r'^sso/acs/$',
             saml2.saml_acs,
             name='saml_acs'),
+    # API Docs (always accessible)
+    re_path(r'^api_docs$', home.api_docs, name='api_docs'),
     # REST API
     # Static Analysis
     re_path(r'^api/v1/upload$', api_sz.api_upload),
